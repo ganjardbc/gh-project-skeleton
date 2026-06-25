@@ -68,19 +68,15 @@ This project follows **MVP discipline + production architecture**.
 # 🏗 Architecture Overview
 ```
 src/
-├── auth/
-├── users/
-├── merchants/
-├── outlets/
-├── products/
-├── transactions/
-├── shifts/
-├── stock/
-├── reports/
-├── rbac/
-├── sync/
-├── database/
-└── common/
+├── auth/           # Authentication endpoints (login, register, profile)
+├── common/         # Common filters, interceptors, guards, decorators
+├── database/       # PrismaService connection
+├── merchants/      # Merchant/Organization CRUD
+├── notifications/  # System notifications
+├── rbac/           # Role & Permission management
+├── settings/       # Account settings
+├── uploads/        # S3 / local file uploading
+└── users/          # User accounts CRUD
 ```
 
 ## Layer Rules
@@ -108,18 +104,10 @@ src/
 ```
 
 Merchant
-└── Outlets
-├── Users
-├── Shifts
-└── Transactions
-└── TransactionItems
-
-Products
-StockLogs
+└── Users
 
 RBAC:
 Users → Roles → Permissions
-(user_roles scoped per outlet)
 
 ```
 
@@ -133,31 +121,17 @@ Tables:
 - roles
 - permissions
 - role_permissions
-- user_roles (scoped by outlet)
+- user_roles
 
 Rules:
 - Guards check permissions — not role names
-- User can have different roles per outlet
 - Permission enforced via guard + decorator
-
-Example permission codes:
-
-```
-
-transaction.create
-transaction.void
-product.edit
-stock.adjust
-report.view
-user.manage
-
-```
 
 ---
 
 # 🧾 POS Transaction Rules (Critical)
 
-Transaction commit must be **atomic**:
+Transaction commit must be **atomic** (when implementing transactions):
 
 Inside one DB transaction:
 
@@ -174,53 +148,12 @@ Never read product price for history.
 
 ---
 
-# 📦 Stock Rules
-
-- `products.stock_qty` = current stock
-- `stock_logs` = audit trail
-- Every stock change must write log
-- No direct stock update without log
-
----
-
-# ⏱ Shift Rules
-
-- Shift belongs to outlet
-- Has start_time
-- end_time nullable until closed
-- Transactions may reference shift
-- shift_id optional but recommended
-
----
-
 # 🏢 Multi-Tenant Rules
 
 - Every user belongs to a merchant
 - All queries must be merchant-scoped
 - merchant_id derived from auth — never from client
 - Slug uniqueness scoped per merchant
-
----
-
-# 🔄 Offline Sync Support
-
-System supports offline POS clients.
-
-Endpoint:
-
-```
-
-POST /sync/transactions
-
-````
-
-Requirements:
-
-- Idempotent
-- device_id aware
-- duplicate safe
-- server authoritative
-- safe to retry
 
 ---
 
@@ -238,7 +171,7 @@ Requirements:
   "success": true,
   "data": {}
 }
-````
+```
 
 ## Response Error
 
@@ -256,18 +189,21 @@ Requirements:
 
 ## 1️⃣ Install
 
+Running commands from the workspace root (recommended):
+
 ```bash
-npm install
+# Install dependencies
+pnpm install
 ```
 
 ---
 
 ## 2️⃣ Environment
 
-Create `.env`
+Create `.env` inside `apps/api/` (copy from `.env.example`):
 
 ```env
-DATABASE_URL="mysql://root:@localhost:3306/gh_skeleton"
+DATABASE_URL="mysql://root:@localhost:3306/db_project_skeleton"
 JWT_SECRET="dev_secret_change_me"
 PORT=3000
 ```
@@ -276,19 +212,19 @@ PORT=3000
 
 ---
 
-## 3️⃣ Prisma
+## 3️⃣ Database Migration & Seeding
 
-If DB schema already exists:
-
-```bash
-npx prisma db pull
-npx prisma generate
-```
-
-If using migrations:
+We have pre-configured scripts inside the root package.json for convenience:
 
 ```bash
-npx prisma migrate dev
+# Run database migrations
+pnpm db:migrate
+
+# Seed initial roles, permissions and demo users
+pnpm db:seed
+
+# Open Prisma Studio to explore tables
+pnpm db:studio
 ```
 
 ---
@@ -296,7 +232,8 @@ npx prisma migrate dev
 ## 4️⃣ Run Server
 
 ```bash
-npm run start:dev
+# Start dev server (watches for changes)
+pnpm dev
 ```
 
 ---
