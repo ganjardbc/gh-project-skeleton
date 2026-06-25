@@ -194,7 +194,7 @@
                   label="Back"
                   class="w-full"
                   :disabled="loading"
-                  @click="activateCallback('1')"
+                  @click="activateCallback(1)"
                 />
                 <Button
                   type="submit"
@@ -239,7 +239,7 @@ import { postRegister } from '@/modules/auth/services/api.ts';
 import UiFormGroup from '@/components/UiFormGroup.vue';
 import UiCard from '@/components/UiCard.vue';
 
-import { PREFIX_ROUTE_PATH as PRP_LANDING } from '@/modules/landing/services/constants';
+import { PREFIX_ROUTE_PATH as PRP_DASHBOARD } from '@/modules/dashboard/services/constants.ts';
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -273,10 +273,10 @@ const userResolver = ref(zodResolver(
   })
 ));
 
-const onUserFormSubmit = ({ valid, values }: { valid: boolean; values: any }, activateCallback: (step: string) => void) => {
+const onUserFormSubmit = ({ valid, values }: { valid: boolean; values: any }, activateCallback: (step: number) => void) => {
   if (valid) {
     userFormValues.value = values;
-    activateCallback('2');
+    activateCallback(2);
   }
 };
 
@@ -334,7 +334,7 @@ const submitRegistration = async () => {
     if (success) {
       setAuth(data);
 
-      router.push(PRP_LANDING);
+      router.push(PRP_DASHBOARD);
       showToast({
         type: 'success',
         title: 'Registration Success',

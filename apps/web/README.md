@@ -113,77 +113,52 @@ src/
 │   ├── auth.vue            # Auth layout
 │   └── default.vue         # Default layout
 ├── modules/                 # Feature modules (feature-based)
-│   ├── auth/
-│   │   ├── pages/          # Auth pages
-│   │   ├── router/         # Auth routes
-│   │   ├── services/       # Auth API services
-│   │   ├── stores/         # Pinia stores (state, actions, getters)
-│   │   ├── styles/         # Module-specific styles
-│   │   └── README.md
-│   ├── dashboard/
-│   │   ├── components/     # Dashboard-specific components
-│   │   ├── helpers/        # Dashboard composables
-│   │   ├── pages/          # Dashboard pages
-│   │   ├── router/         # Dashboard routes
-│   │   ├── services/       # Dashboard API services
-│   │   ├── stores/         # Pinia stores
-│   │   └── README.md
-│   ├── pos/                # POS terminal module (to be created)
-│   │   ├── components/
+│   ├── auth/                # Authentication (Login/Register)
 │   │   ├── pages/
 │   │   ├── router/
 │   │   ├── services/
 │   │   ├── stores/
 │   │   └── README.md
-│   ├── transactions/       # Transaction management (to be created)
-│   │   ├── components/
+│   ├── dashboard/           # Dashboard home
 │   │   ├── pages/
 │   │   ├── router/
 │   │   ├── services/
-│   │   ├── stores/
 │   │   └── README.md
-│   ├── products/           # Product management (to be created)
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── router/
-│   │   ├── services/
-│   │   ├── stores/
-│   │   └── README.md
-│   ├── reports/            # Reports & analytics (to be created)
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── router/
-│   │   ├── services/
-│   │   ├── stores/
-│   │   └── README.md
-│   ├── users/              # User management (to be created)
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── router/
-│   │   ├── services/
-│   │   ├── stores/
-│   │   └── README.md
-│   ├── outlets/            # Outlet management (to be created)
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── router/
-│   │   ├── services/
-│   │   ├── stores/
-│   │   └── README.md
-│   ├── error/              # Error pages
-│   │   ├── pages/
-│   │   └── router/
-│   ├── landing/            # Landing page
+│   ├── merchants/           # Merchant profiles
 │   │   ├── pages/
 │   │   ├── router/
 │   │   └── services/
-│   └── settings/           # Settings module
-│       ├── components/
+│   ├── notification/        # System notifications
+│   │   ├── pages/
+│   │   ├── router/
+│   │   └── services/
+│   ├── permission/          # RBAC Permission management
+│   │   ├── pages/
+│   │   ├── router/
+│   │   └── services/
+│   ├── role/                # RBAC Role management
+│   │   ├── pages/
+│   │   ├── router/
+│   │   ├── services/
+│   │   └── stores/
+│   ├── user/                # User accounts management
+│   │   ├── pages/
+│   │   ├── router/
+│   │   └── services/
+│   ├── profile/             # Logged in user profile
+│   │   ├── pages/
+│   │   ├── router/
+│   │   └── services/
+│   ├── settings/            # Account & site settings
+│   │   ├── pages/
+│   │   ├── router/
+│   │   └── services/
+│   ├── error/               # Error pages (403, 404)
+│   │   ├── pages/
+│   │   └── router/
+│   └── landing/             # Marketing landing page
 │       ├── pages/
-│       ├── router/
-│       ├── services/
-│       ├── stores/
-│       └── README.md
+│       └── router/
 ├── plugins/                 # Vue plugins
 │   └── axios.ts            # Axios configuration
 ├── services/               # Global services
