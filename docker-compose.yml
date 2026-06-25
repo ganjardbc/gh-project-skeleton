@@ -33,4 +33,5 @@ services:
 
 networks:
   devbox_devnet:
-    external: true
+    name: devbox_devnet
+    driver: bridge

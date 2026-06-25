@@ -93,19 +93,19 @@ jobs:
         run: pnpm install --frozen-lockfile=false
 
       - name: Build shared-types (impact dependency)
-        run: pnpm --filter @umkm-pos/shared-types build
+        run: pnpm --filter @gh-skeleton/shared-types build
 
       - name: Generate Prisma Client
-        run: pnpm --filter umkm-pos-api exec prisma generate
+        run: pnpm --filter gh-skeleton-api exec prisma generate
 
       - name: Lint API
-        run: pnpm --filter umkm-pos-api lint
+        run: pnpm --filter gh-skeleton-api lint
 
       - name: Test API
-        run: pnpm --filter umkm-pos-api test
+        run: pnpm --filter gh-skeleton-api test
 
       - name: Build API
-        run: pnpm --filter umkm-pos-api build
+        run: pnpm --filter gh-skeleton-api build
 
       - name: Cache API build artifacts
         uses: actions/cache@v4
