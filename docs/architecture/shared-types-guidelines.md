@@ -1,16 +1,16 @@
 # Shared Types Guidelines (`@gh-skeleton/shared-types`)
 
-Package ini adalah sumber tunggal kontrak type antara frontend (`apps/admin`) dan backend (`apps/api`).
+This package is the single source of the type contract between the frontend (`apps/admin`) and the backend (`apps/api`).
 
 ## What goes into shared-types
 
-Masukkan type ke package ini jika type tersebut:
+Add a type to this package when it:
 
-- merepresentasikan kontrak request/response API publik,
-- dipakai lintas workspace (`apps/admin` dan `apps/api`),
-- murni type-level (interface/type alias), tanpa logic runtime.
+- represents a public API request or response contract,
+- is used across workspaces (`apps/admin` and `apps/api`),
+- is purely type-level (an interface or type alias), with no runtime logic.
 
-Contoh:
+Examples:
 
 - `ApiResponse<T>`
 - `PaginationMeta`
@@ -19,18 +19,20 @@ Contoh:
 
 ## What should NOT go into shared-types
 
-Jangan masukkan hal berikut:
+Do not add:
 
-- business logic, helper functions, service classes,
-- type yang sangat spesifik ke implementasi internal satu app,
-- dependency framework-specific (`@nestjs/*`, `vue`, dll).
+- business logic, helper functions, or service classes,
+- types that are specific to the internal implementation of one app,
+- framework-specific dependencies (`@nestjs/*`, `vue`, and so on).
 
 ## Contribution rules
 
-1. **Contract-first**: field yang dipakai publik API harus dimodelkan di `shared-types` dulu.
-2. **Backward compatibility**: hindari breaking change tanpa migrasi.
-3. **Breaking change notes wajib**: jika rename/remove field kontrak, tambahkan catatan migrasi singkat di PR.
-4. **Domain-based structure**: tempatkan type sesuai domain (`auth`, `users`, `common`).
+1. **Contract-first**: model a field that the public API uses in `shared-types` first.
+2. **Backward compatibility**: avoid a breaking change without a migration.
+3. **Breaking change notes are required**: when you rename or remove a contract field, add a short migration note to the PR.
+4. **Domain-based structure**: place each type under its domain (`auth`, `users`, `common`).
+
+Rebuild after a change: `pnpm --filter @gh-skeleton/shared-types build`.
 
 ## Package layout
 
@@ -41,4 +43,3 @@ packages/shared-types/
    ├─ auth/
    └─ users/
 ```
-

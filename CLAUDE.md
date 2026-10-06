@@ -40,8 +40,6 @@ pnpm --filter @gh-skeleton/landing <script>   # Landing (apps/landing)
 pnpm --filter @gh-skeleton/shared-types build
 ```
 
-`docs/runbooks/monorepo-commands.md` mentions `pnpm dev:web` / `pnpm dev:api`; these are not defined in the root `package.json`. Use the `--filter` form.
-
 `pnpm lint` covers every workspace: `apps/api` uses `apps/api/eslint.config.mjs` (with `--fix`), and `apps/admin`, `apps/landing`, and `packages/ui` use the root `eslint.config.mjs`, which builds on `packages/eslint-config/vue.mjs` and holds the import boundaries between the packages. `pnpm test` and `pnpm format` only reach `apps/api`.
 
 Scaffold a frontend module from `apps/admin` (the Hygen templates live in `apps/admin/_templates`):

@@ -171,5 +171,3 @@ Every successful response is wrapped as `{ success, data }`. Paginated lists ret
 - [`docs/frontend`](docs/frontend) — spec summary and user flows
 - [`docs/runbooks`](docs/runbooks) — environment and command guides
 - `CLAUDE.md` in the root, each app, and `packages/ui` — conventions for working in that part of the codebase
-
-`docs/runbooks/monorepo-commands.md` mentions `pnpm dev:web` and `pnpm dev:api`. Those scripts do not exist; use the `--filter` form above.

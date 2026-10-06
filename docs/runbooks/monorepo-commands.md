@@ -1,50 +1,58 @@
 # Monorepo Runbook Commands
 
+Run these from the repo root.
+
 ## Install dependencies
 
 ```bash
 pnpm install
 ```
 
-## Build semua workspace
+## Build every workspace
 
 ```bash
-pnpm -r build
+pnpm build
 ```
 
-## Jalankan app frontend
+## Run the apps
 
 ```bash
-pnpm dev:web
+pnpm dev                                  # all apps in parallel
+pnpm --filter gh-skeleton-app dev         # admin (apps/admin)
+pnpm --filter gh-skeleton-api dev         # API (apps/api)
+pnpm --filter @gh-skeleton/landing dev    # landing (apps/landing)
 ```
 
-## Jalankan app backend
+## Check a change
 
 ```bash
-pnpm dev:api
+pnpm lint
+pnpm typecheck
+pnpm --filter gh-skeleton-api test
 ```
 
 ## Selective CI rules (path-based)
 
-Workflow CI (`.github/workflows/ci.yml`) menggunakan path filter untuk menentukan job mana yang dieksekusi.
+The CI workflow (`.github/workflows/ci.yml`) uses a path filter to decide which jobs run.
 
 ### Impact matrix
 
-- `apps/admin/**` → jalankan pipeline **web** (`build` web + build shared-types).
-- `apps/api/**` → jalankan pipeline **api** (`lint`, `test`, `build` api + build shared-types).
-- `packages/shared-types/**` → jalankan **web + api**.
-- `pnpm-lock.yaml`, `pnpm-workspace.yaml`, root `package.json`, `.github/workflows/**` → jalankan **full CI** (web + api).
+- `apps/api/**` → runs **api** (build shared-types, then lint, test, and build the API).
+- `apps/admin/**`, `apps/landing/**`, `packages/ui/**`, `packages/eslint-config/**`, `eslint.config.mjs` → runs **frontend** (build shared-types, then lint and typecheck the admin app, the landing site, and the UI package).
+- `packages/shared-types/**` → runs **api** and **frontend**.
+- `pnpm-lock.yaml`, `pnpm-workspace.yaml`, root `package.json`, `.github/workflows/**` → runs **api** and **frontend**.
 
 ### Jobs
 
-- `prepare`: deteksi perubahan path dan expose output untuk gating job berikutnya.
-- `web`: jalan hanya saat impact ke frontend (langsung/shared/global).
-- `api`: jalan hanya saat impact ke backend (langsung/shared/global).
-- `summary`: selalu jalan untuk menulis ringkasan run/skip beserta alasannya ke `GITHUB_STEP_SUMMARY`.
+- `prepare`: detects the changed paths and exposes outputs that gate the later jobs.
+- `api`: runs only when the backend is affected (directly, through shared-types, or by a root change).
+- `frontend`: runs only when a frontend workspace is affected (directly, through shared-types, or by a root change).
+- `deploy-api`: deploys the API over SSH. Runs only on a push to `main` or `master`, after `api` succeeds.
+- `summary`: always runs and writes what ran, what was skipped, and why to `GITHUB_STEP_SUMMARY`.
 
-### Verifikasi cepat skenario PR
+### Quick check for a pull request
 
-1. Ubah file di `apps/admin/**` → hanya `web` + `summary` yang run.
-2. Ubah file di `apps/api/**` → hanya `api` + `summary` yang run.
-3. Ubah file di `packages/shared-types/**` → `web` dan `api` run.
-4. Ubah lockfile/workflow/root package → `web` dan `api` run (full CI).
+1. Change a file in `apps/api/**` → only `api` and `summary` run.
+2. Change a file in `apps/admin/**`, `apps/landing/**`, or `packages/ui/**` → only `frontend` and `summary` run.
+3. Change a file in `packages/shared-types/**` → `api` and `frontend` run.
+4. Change the lockfile, a workflow, or the root `package.json` → `api` and `frontend` run.
