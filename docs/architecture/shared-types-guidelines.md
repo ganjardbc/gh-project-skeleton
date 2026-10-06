@@ -15,7 +15,7 @@ Contoh:
 - `ApiResponse<T>`
 - `PaginationMeta`
 - `AuthUser`
-- `ProductSummary`
+- `UserSummary`
 
 ## What should NOT go into shared-types
 
@@ -30,7 +30,7 @@ Jangan masukkan hal berikut:
 1. **Contract-first**: field yang dipakai publik API harus dimodelkan di `shared-types` dulu.
 2. **Backward compatibility**: hindari breaking change tanpa migrasi.
 3. **Breaking change notes wajib**: jika rename/remove field kontrak, tambahkan catatan migrasi singkat di PR.
-4. **Domain-based structure**: tempatkan type sesuai domain (`auth`, `users`, `products`, `common`).
+4. **Domain-based structure**: tempatkan type sesuai domain (`auth`, `users`, `common`).
 
 ## Package layout
 
@@ -39,7 +39,6 @@ packages/shared-types/
 └─ src/
    ├─ common/
    ├─ auth/
-   ├─ users/
-   └─ products/
+   └─ users/
 ```
 

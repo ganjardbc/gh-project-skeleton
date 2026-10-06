@@ -1,4 +1,4 @@
-# Tech Stack — WisataPOS
+# Tech Stack
 
 ## Monorepo
 
@@ -36,7 +36,7 @@ Axios        — HTTP client
 ## Frontend (apps/landing)
 
 ```txt
-Vue 3 + Vite — marketing landing page
+Nuxt 4       — marketing landing site (static generation, id/en)
 ```
 
 ## Shared Packages

@@ -58,6 +58,5 @@ Client-side checks read only the **first** role's permissions. The API checks al
 ## Related documents
 
 - [user-flows.md](user-flows.md) — flows and acceptance criteria
-- [frontend-routes.md](frontend-routes.md), [layouts.md](layouts.md), [ui-pages.md](ui-pages.md)
 - [../api/api-conventions.md](../api/api-conventions.md) — API request and response conventions
 - [../backend/domain-rules.md](../backend/domain-rules.md) — tenancy and RBAC rules
