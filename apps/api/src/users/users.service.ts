@@ -179,7 +179,7 @@ export class UsersService {
 
   /**
    * Soft-delete a user by setting is_active = false (merchant-scoped).
-   * Hard delete is intentionally avoided to preserve audit trails in transactions/shifts.
+   * Hard delete is intentionally avoided to preserve audit trails (created_by / updated_by references).
    */
   async remove(id: string, merchantId: string, updatedBy: string) {
     // Ensure user exists and belongs to merchant

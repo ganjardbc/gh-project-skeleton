@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# WisataPOS - API Deployment Script
+# GH Skeleton - API Deployment Script
 # ==============================================================================
 # This script automates the deployment of apps/api (NestJS + Prisma + MySQL).
 # Supports both Docker Compose and Local Node.js / PM2 deployment.
@@ -95,7 +95,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-log_info "=== WisataPOS API Deployment ==="
+log_info "=== GH Skeleton API Deployment ==="
 log_info "Workspace root: $WORKSPACE_ROOT"
 log_info "API directory: $API_DIR"
 

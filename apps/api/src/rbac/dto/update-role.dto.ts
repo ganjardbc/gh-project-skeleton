@@ -3,7 +3,7 @@ import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 export class UpdateRoleDto {
   @ApiPropertyOptional({
-    example: 'senior_cashier',
+    example: 'senior_editor',
     description: 'Unique role name (lowercase, underscores)',
   })
   @IsOptional()

@@ -9,7 +9,7 @@ import {
 
 export class CreateRoleDto {
   @ApiProperty({
-    example: 'cashier',
+    example: 'editor',
     description: 'Unique role name (lowercase, underscores)',
   })
   @IsNotEmpty()
@@ -22,7 +22,7 @@ export class CreateRoleDto {
   name: string;
 
   @ApiPropertyOptional({
-    example: 'Handles POS transactions',
+    example: 'Can create and update content',
     description: 'Role description',
   })
   @IsOptional()
