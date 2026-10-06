@@ -257,7 +257,7 @@ describe('API Data Fetching and State Management', () => {
       let data: any = { existing: 'data' };
       try {
         data = await api.getSalesSummary(params);
-      } catch (error) {
+      } catch {
         data = null;
       }
 

@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { PrismaService } from '../database/prisma.service';
 import { ListNotificationsDto } from './dto/list-notifications.dto';
@@ -18,26 +22,43 @@ export class NotificationsService {
     };
 
     const [data, total, unreadCount] = await Promise.all([
-      this.prisma.notifications.findMany({ where, orderBy: { created_at: 'desc' }, skip, take: limit }),
+      this.prisma.notifications.findMany({
+        where,
+        orderBy: { created_at: 'desc' },
+        skip,
+        take: limit,
+      }),
       this.prisma.notifications.count({ where }),
-      this.prisma.notifications.count({ where: { user_id: userId, is_read: false } }),
+      this.prisma.notifications.count({
+        where: { user_id: userId, is_read: false },
+      }),
     ]);
 
-    return { data, meta: { ...PaginationDto.calculateMeta(total, page, limit), unreadCount } };
+    return {
+      data,
+      meta: { ...PaginationDto.calculateMeta(total, page, limit), unreadCount },
+    };
   }
 
   async findOne(id: string, userId: string) {
-    const notification = await this.prisma.notifications.findUnique({ where: { id } });
+    const notification = await this.prisma.notifications.findUnique({
+      where: { id },
+    });
     if (!notification) throw new NotFoundException('Notification not found');
     if (notification.user_id !== userId) {
-      throw new ForbiddenException('You are not allowed to access this notification');
+      throw new ForbiddenException(
+        'You are not allowed to access this notification',
+      );
     }
     return notification;
   }
 
   async markAsRead(id: string, userId: string) {
     await this.findOne(id, userId);
-    return this.prisma.notifications.update({ where: { id }, data: { is_read: true, updated_at: new Date() } });
+    return this.prisma.notifications.update({
+      where: { id },
+      data: { is_read: true, updated_at: new Date() },
+    });
   }
 
   async markAllAsRead(userId: string) {

@@ -19,7 +19,7 @@ export class RbacService {
   //  ROLES
   // ─────────────────────────────────────────────
 
-  async createRole(dto: CreateRoleDto, createdBy: string) {
+  async createRole(dto: CreateRoleDto, _createdBy: string) {
     const existing = await this.prisma.roles.findFirst({
       where: { name: dto.name },
     });
@@ -73,7 +73,7 @@ export class RbacService {
     return role;
   }
 
-  async updateRole(id: string, dto: UpdateRoleDto, updatedBy: string) {
+  async updateRole(id: string, dto: UpdateRoleDto, _updatedBy: string) {
     await this.findOneRole(id);
 
     if (dto.name) {
@@ -226,9 +226,7 @@ export class RbacService {
       },
     });
     if (existing) {
-      throw new ConflictException(
-        'Role already assigned to this user',
-      );
+      throw new ConflictException('Role already assigned to this user');
     }
 
     return this.prisma.user_roles.create({

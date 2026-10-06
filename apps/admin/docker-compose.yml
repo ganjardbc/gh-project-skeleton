@@ -1,9 +1,9 @@
 services:
-  sikeci-web-app:
+  gh-skeleton-admin:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: sikeci-web-app
+    container_name: gh-skeleton-admin
     ports:
       - "8910:80"
     restart: unless-stopped
@@ -13,11 +13,11 @@ services:
       # Optional: Mount nginx logs
       - nginx_logs:/var/log/nginx
     networks:
-      - sikeci-network
+      - gh-skeleton-network
 
 volumes:
   nginx_logs:
 
 networks:
-  sikeci-network:
+  gh-skeleton-network:
     driver: bridge

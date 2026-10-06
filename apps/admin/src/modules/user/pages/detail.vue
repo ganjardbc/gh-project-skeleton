@@ -139,7 +139,6 @@
     </UiCard>
   </div>
   <AssignRoleModal
-    v-slot
     v-model:visibility="showAssignRoleModal"
     @cancel="cancelAssignRoleModal"
     @submit="submitAssignRoleModal"

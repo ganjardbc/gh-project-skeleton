@@ -14,7 +14,7 @@ Visual rules and the shared component catalog are in the root [`DESIGN.md`](../.
 | `pnpm start` | Same, bound to `0.0.0.0` on `$PORT` (default 4173) |
 | `pnpm typecheck` | `nuxt typecheck` |
 
-From the repo root, prefix with `pnpm --filter @gh-skeleton/landing`. There are no test or lint scripts.
+From the repo root, prefix with `pnpm --filter @gh-skeleton/landing`. `pnpm lint` runs ESLint with the root `eslint.config.mjs`, which rejects PrimeVue and `@gh-skeleton/ui/prime` imports here. There is no test script.
 
 Nuxt is pinned to `~4.5`. Nuxt 4.6 requires Node 22.22.3 or newer; raise the pin only together with the Node version.
 

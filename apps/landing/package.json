@@ -9,7 +9,8 @@
     "preview": "nuxt preview",
     "start": "nuxt preview --host 0.0.0.0 --port ${PORT:-4173}",
     "typecheck": "nuxt typecheck",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@gh-skeleton/ui": "workspace:*",

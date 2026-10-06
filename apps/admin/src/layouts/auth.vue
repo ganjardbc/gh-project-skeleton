@@ -15,7 +15,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import Button from 'primevue/button';
 import { useTheme } from '@gh-skeleton/ui';
 
 const ENABLE_DARKMODE_TOGGLE = false;

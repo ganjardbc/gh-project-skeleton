@@ -11,8 +11,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `pnpm typecheck` | `vue-tsc -b --noEmit` |
 | `pnpm preview` | Preview production build |
 | `pnpm new-module` | Generate a new feature module via Hygen (`npx hygen module new`) |
+| `pnpm lint` | ESLint, using the root `eslint.config.mjs` |
 
-From the repo root, prefix with `pnpm --filter gh-skeleton-app`. There are no test or lint scripts.
+From the repo root, prefix with `pnpm --filter gh-skeleton-app`. There is no test script.
 
 ## Tech Stack
 
@@ -146,8 +147,6 @@ VITE_API_BASE_URL=http://localhost:3000
 ## Deployment
 
 `Dockerfile` builds from the repo root context: it builds `@gh-skeleton/shared-types`, copies it and `packages/ui` into `vendor/`, rewrites the two workspace dependencies to point there, then serves `dist/` with nginx (`default.conf`). A new workspace dependency needs the same treatment. `VITE_API_BASE_URL` is a Docker build argument.
-
-`apps/admin/docker-compose.yml` still carries the service, container, and network names of another project (`sikeci-*`); rename them before using it.
 
 ## Gotchas
 

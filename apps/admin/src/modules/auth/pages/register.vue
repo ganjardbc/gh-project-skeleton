@@ -273,7 +273,7 @@ const submitRegistration = async () => {
     };
 
     const response = await postRegister(payload);
-    const { success, data } = response?.data;
+    const { success, data } = response.data;
 
     if (success) {
       setAuth(data);

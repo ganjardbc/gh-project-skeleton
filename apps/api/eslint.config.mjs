@@ -38,6 +38,14 @@ export default tseslint.config(
         },
       ],
       "prettier/prettier": ["error", { endOfLine: "auto" }],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "NewExpression[callee.name='PrismaClient']",
+          message:
+            'Inject PrismaService instead of creating a PrismaClient (see apps/api/CLAUDE.md).',
+        },
+      ],
     },
   },
   {
