@@ -60,7 +60,7 @@
           severity="secondary"
           label="Cancel"
           size="medium"
-          class="w-full md:w-[128px]"
+          class="w-full md:w-32"
           @click="onCancel"
         />
         <Button
@@ -68,7 +68,7 @@
           severity="danger"
           label="Deactivate"
           size="medium"
-          class="w-full md:w-[128px]"
+          class="w-full md:w-32"
         />
       </div>
     </Form>

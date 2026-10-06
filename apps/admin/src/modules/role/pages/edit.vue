@@ -37,14 +37,14 @@
           severity="secondary"
           label="Cancel"
           size="medium"
-          class="w-full md:w-[128px]"
+          class="w-full md:w-32"
           @click="onCancel"
         />
         <Button
           type="submit"
           label="Save"
           size="medium"
-          class="w-full md:w-[128px]"
+          class="w-full md:w-32"
         />
       </div>
     </Form>

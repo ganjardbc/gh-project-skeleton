@@ -49,7 +49,7 @@
             {{ formatDateTime(slotProps.data.created_at) }}
           </template>
         </Column>
-        <Column field="action" header="#" class="w-full md:w-[128px]">
+        <Column field="action" header="#" class="w-full md:w-32">
           <template #body="slotProps">
             <div class="flex gap-2">
               <Button

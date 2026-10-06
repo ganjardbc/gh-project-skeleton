@@ -62,7 +62,7 @@
           severity="secondary"
           label="Cancel"
           size="medium"
-          class="w-full md:w-[128px]"
+          class="w-full md:w-32"
           @click="onCancel"
         />
         <Button
@@ -70,14 +70,14 @@
           variant="outlined"
           label="Reset"
           size="medium"
-          class="w-full md:w-[128px]"
+          class="w-full md:w-32"
           @click="confirmReset"
         />
         <Button
           type="submit"
           label="Save"
           size="medium"
-          class="w-full md:w-[128px]"
+          class="w-full md:w-32"
         />
       </div>
     </Form>

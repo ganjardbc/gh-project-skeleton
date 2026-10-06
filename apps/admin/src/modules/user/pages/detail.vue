@@ -121,7 +121,7 @@
             {{ slotProps.data.roles.role_permissions?.length || '0' }}
           </template>
         </Column>
-        <Column v-if="isCanUpdate" field="action" header="#" class="w-full md:w-[128px]">
+        <Column v-if="isCanUpdate" field="action" header="#" class="w-full md:w-32">
           <template #body="slotProps">
             <Button
               severity="secondary"
