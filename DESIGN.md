@@ -232,7 +232,7 @@ Weights in use: `font-normal`, `font-medium`, `font-semibold`, `font-bold`. Labe
 
 **Breakpoints.** Tailwind defaults. `md` (768px) switches stacked to side-by-side. `xl` (1280px) switches `UiFormGroup` to its horizontal layout.
 
-**Fixed widths.** Form action buttons use `w-full md:w-[128px]`.
+**Fixed widths.** Form action buttons use `w-full md:w-32`.
 
 ## 7. Icons
 
@@ -319,8 +319,8 @@ Admin button conventions:
     </div>
 
     <div class="w-full flex justify-end gap-4">
-      <Button severity="secondary" label="Cancel" class="w-full md:w-[128px]" @click="onCancel" />
-      <Button type="submit" label="Save" class="w-full md:w-[128px]" />
+      <Button severity="secondary" label="Cancel" class="w-full md:w-32" @click="onCancel" />
+      <Button type="submit" label="Save" class="w-full md:w-32" />
     </div>
   </Form>
 </UiCard>
