@@ -78,6 +78,7 @@ The seed also creates the permission codes, the role assignments, and 12 sample 
 | `JWT_SECRET`, `JWT_EXPIRES_IN` | Token signing key and lifetime |
 | `CORS_ORIGIN` | Comma-separated allowed origins |
 | `STORAGE_DRIVER` | `local` or `s3` |
+| `APP_URL` | Public origin of the API, the base of local upload URLs. Not in the template; falls back to `http://localhost:3030` |
 | `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME` | Required when `STORAGE_DRIVER=s3` |
 
 **Admin** — `apps/admin/.env` (template: `.env.sample`)
@@ -147,8 +148,6 @@ Every successful response is wrapped as `{ success, data }`. Paginated lists ret
 **Admin** modules: `auth`, `dashboard`, `landing`, `merchants`, `user`, `role`, `permission`, `profile`, `settings`, `notification`, `error`. Routes and sidebar entries are collected from each module automatically; there is no central registry to edit.
 
 **Landing** pages: home, about, FAQ, and terms, in Indonesian (default) and English.
-
-`nama-modul-test` in `apps/api/src` and `apps/admin/src/modules` is a leftover generator sample, not a real module.
 
 ## Core concepts
 

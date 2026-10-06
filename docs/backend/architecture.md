@@ -18,8 +18,6 @@ Each area of the system is a NestJS module under `apps/api/src`. Modules are reg
 
 All routes sit under the global prefix `/api/v1`. Swagger UI is served at `/docs`.
 
-`src/nama-modul-test/` is an empty leftover scaffold, not a module.
-
 ## Module layout
 
 ```

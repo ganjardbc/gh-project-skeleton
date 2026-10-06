@@ -192,7 +192,7 @@ modules/[feature-name]/
 - Login with email/password
 - Token stored in secure storage
 - Auto-logout on token expiry
-- Permission-based UI rendering (via `services/permissions.ts`)
+- Permission-based UI rendering (via `isHasPermission()` in `helpers/auth.ts`)
 - Route guards for protected pages
 - Permission decorator support
 

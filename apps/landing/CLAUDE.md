@@ -11,6 +11,7 @@ Visual rules and the shared component catalog are in the root [`DESIGN.md`](../.
 | `pnpm dev` | Nuxt dev server on port 5174 |
 | `pnpm build` | `nuxt generate`: static site in `.output/public` |
 | `pnpm preview` | Serve the generated site |
+| `pnpm start` | Same, bound to `0.0.0.0` on `$PORT` (default 4173) |
 | `pnpm typecheck` | `nuxt typecheck` |
 
 From the repo root, prefix with `pnpm --filter @gh-skeleton/landing`. There are no test or lint scripts.

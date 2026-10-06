@@ -38,7 +38,9 @@ pnpm --filter @gh-skeleton/landing <script>   # Landing (apps/landing)
 pnpm --filter @gh-skeleton/shared-types build
 ```
 
-`README.md` and `docs/runbooks/` mention `pnpm dev:web` / `pnpm dev:api`; these are not defined in the root `package.json`. Use the `--filter` form.
+`docs/runbooks/monorepo-commands.md` mentions `pnpm dev:web` / `pnpm dev:api`; these are not defined in the root `package.json`. Use the `--filter` form.
+
+`pnpm lint`, `pnpm test`, and `pnpm format` only reach `apps/api`; the frontends define none of those scripts.
 
 Scaffold a frontend module from `apps/admin` (the Hygen templates live in `apps/admin/_templates`):
 
@@ -58,8 +60,8 @@ gh-project-skeleton/
 │   ├── shared-utils/  # @gh-skeleton/shared-utils (currently empty)
 │   ├── ui/            # @gh-skeleton/ui — design tokens + shared Vue components
 │   └── eslint-config/ # Shared ESLint config
-├── docs/              # Architecture, backend, database, frontend docs + runbooks
-├── openspec/          # Spec-driven change proposals and archived changes
+├── docs/              # Architecture, API, backend, database, frontend docs + runbooks
+├── DESIGN.md          # Visual rules and component catalog
 └── docker-compose.yml # MySQL + API containers
 ```
 
@@ -112,11 +114,11 @@ Seeded roles: `admin`, `owner`, `viewer`. New registrations get `owner`. Permiss
 - `users/user.types.ts` — `UserSummary`
 - `ServiceHealth`, `HealthStatus`
 
-Import in either app as `@gh-skeleton/shared-types`. Rebuild after changing types (`pnpm --filter @gh-skeleton/shared-types build`). See `docs/shared-types-guidelines.md`.
+Import in either app as `@gh-skeleton/shared-types`. Rebuild after changing types (`pnpm --filter @gh-skeleton/shared-types build`). See `docs/architecture/shared-types-guidelines.md`.
 
 ## Environment Setup
 
-**Frontend** (`apps/admin/.env`):
+**Frontend** (`apps/admin/.env`, template `.env.sample`):
 ```env
 VITE_APP_VERSION=1.0.0
 VITE_API_BASE_URL=http://localhost:3000
@@ -132,6 +134,6 @@ CORS_ORIGIN=http://localhost:5173
 STORAGE_DRIVER=local
 ```
 
-`PORT` falls back to **3030** when unset. S3 uploads need `STORAGE_DRIVER=s3` plus `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`.
+`PORT` falls back to **3030** when unset. With `STORAGE_DRIVER=local`, set `APP_URL` to the API's public origin: it is the base of every upload URL and also falls back to `http://localhost:3030`. S3 uploads need `STORAGE_DRIVER=s3` plus `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`.
 
-**Landing** (`apps/landing/.env`): `NUXT_PUBLIC_WEB_BASE_URL`, `NUXT_PUBLIC_API_BASE_URL`, `NUXT_PUBLIC_SITE_URL`. Read at build time.
+**Landing** (`apps/landing/.env`, template `.env.sample`): `NUXT_PUBLIC_WEB_BASE_URL`, `NUXT_PUBLIC_API_BASE_URL`, `NUXT_PUBLIC_SITE_URL`. Read at build time.

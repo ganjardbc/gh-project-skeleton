@@ -88,7 +88,7 @@ Read it with `@CurrentUser()` or a single field with `@CurrentUser('merchant_id'
 - **RBAC**: Flat. `user_roles` is `(user_id, role_id)`; effective permissions are the union across all of a user's roles. Access is granted by permission code, never by role name.
 - **Registration**: Creates the merchant and the user in one transaction and assigns the `owner` role, which must already exist (run the seed).
 - **Users**: Deleting a user is a soft delete (`is_active = false`). Inactive users cannot log in or pass the JWT guard.
-- **Uploads**: Stored through a driver chosen by `STORAGE_DRIVER` (`local` or `s3`). Merchant logos and user avatars reference `uploads.id`; read URLs are resolved as signed URLs.
+- **Uploads**: Stored through a driver chosen by `STORAGE_DRIVER` (`local` or `s3`). Merchant logos and user avatars reference `uploads.id`. The S3 driver resolves read URLs as signed URLs that expire; the local driver returns a plain public URL, `{APP_URL}/uploads/local/<key>`.
 - **Audit columns**: Set `created_by` / `updated_by` from the current user where the table has them.
 
 ## Database Conventions
@@ -133,8 +133,8 @@ Read it with `@CurrentUser()` or a single field with `@CurrentUser('merchant_id'
 
 - A permission code used in `@RequirePermission` must exist in the `permissions` table and be attached to a role. The `settings.*` codes used by `SettingsController` are not in `prisma/seed.ts`.
 - `PORT` defaults to 3030 when unset.
+- The local storage driver builds URLs from `APP_URL`, which also falls back to `http://localhost:3030`. `.env.example` sets `PORT=3000` and has no `APP_URL`, so local upload URLs point at the wrong port until `APP_URL` is set.
 - `postinstall` runs `prisma generate`, so the client is rebuilt after every `pnpm install`. It is allowed to fail (the Docker build installs before the schema is copied and generates explicitly afterwards). If services report `Property 'users' does not exist on type 'PrismaService'`, run `pnpm db:generate`.
-- `src/nama-modul-test/` is an empty leftover scaffold, not a real module.
 
 ## Environment
 
@@ -143,6 +143,8 @@ Required `.env` variables (full list in `.env.example`):
 - `JWT_SECRET` — secret for JWT tokens; always set it, the code has an insecure development fallback
 - `JWT_EXPIRES_IN` — present in `.env.example` but not read; the token lifetime is fixed at `7d` in `src/auth/auth.module.ts`
 - `PORT` — server port
+- `APP_URL` — public origin of the API, used by the local storage driver; missing from `.env.example`
 - `CORS_ORIGIN` — comma-separated allowed origins
 - `STORAGE_DRIVER` — `local` or `s3`; S3 also needs `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`
-- Upload limits: `MAX_FILE_SIZE`, `ALLOWED_MIME_TYPES`, `SIGNED_URL_EXPIRY`
+- Upload limits: `MAX_FILE_SIZE`, `ALLOWED_MIME_TYPES`, `SIGNED_URL_EXPIRY`; optional `S3_ENDPOINT` for S3-compatible services
+- `API_PREFIX`, `API_VERSION`, `LOG_LEVEL` — present in `.env.example` but not read; the prefix is fixed at `api/v1` in `src/main.ts`
