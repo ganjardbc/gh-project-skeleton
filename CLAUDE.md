@@ -53,7 +53,7 @@ pnpm --filter gh-skeleton-app new-module
 `.claude/` is checked in:
 
 - `settings.json` — hooks that feed their errors back to Claude, plus a `deny` list for force pushes and Prisma resets:
-  - `PreToolUse`: `hooks/protect-files.mjs` refuses edits to `.env` files and to committed migrations; `hooks/guard-git.mjs` refuses `git commit` on `main` and any push to `main`.
+  - `PreToolUse`: `hooks/protect-files.mjs` refuses edits to `.env` files and to committed migrations; `hooks/guard-git.mjs` refuses force pushes (`--force-with-lease` is allowed).
   - `PostToolUse`: `hooks/lint-file.mjs` lints each edited file.
   - `Stop`: `hooks/typecheck-changed.mjs` typechecks the workspaces with uncommitted changes; `hooks/test-changed.mjs` runs the Jest tests related to changed `apps/api` files; `hooks/check-permissions.mjs` fails on a permission code that the API or the admin app uses but the seed lacks.
 - `skills/` — `new-api-module`, `new-admin-module`, `new-landing-page`, `new-ui-component`, `add-permission`, `add-shared-type`, `db-migration`, `write-api-tests`. Use them for those tasks.
@@ -63,7 +63,6 @@ pnpm --filter gh-skeleton-app new-module
 
 Every change goes through plan, implement, verify.
 
-- **Branch.** Work on a branch, not on `main`. A push to `main` deploys the API to the VPS and runs `prisma migrate deploy` (`.github/workflows/ci.yml`). Committing on `main` and pushing to it are the user's to do.
 - **Plan.** For a new feature, a schema change, or a change that spans workspaces, write the plan and wait for approval before editing. A clear single-file change needs no plan.
 - **Implement.** Use the matching skill. Copy the reference implementation named in the app's CLAUDE.md rather than inventing a new shape. Leave files outside the task alone.
 - **Bug fix.** In `apps/api`, reproduce the bug with a failing test first, then fix it. The test stays as the regression test.

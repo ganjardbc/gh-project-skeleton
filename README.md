@@ -159,7 +159,7 @@ Every successful response is wrapped as `{ success, data }`. Paginated lists ret
 
 - Each app has its own `Dockerfile`.
 - `docker-compose.yml` runs MySQL and the API on a shared Docker network without publishing host ports; it expects a reverse proxy in front. Replace the credentials, `JWT_SECRET`, and `CORS_ORIGIN` in it before use.
-- `.github/workflows/ci.yml` lints, tests, and builds the API when `apps/api`, `packages/shared-types`, or root config changes, then deploys it over SSH on a push to `main`. A second job lints and type-checks `apps/admin`, `apps/landing`, and `packages/ui` when they change.
+- `.github/workflows/ci.yml` lints, tests, and builds the API when `apps/api`, `packages/shared-types`, or root config changes. A second job lints and type-checks `apps/admin`, `apps/landing`, and `packages/ui` when they change.
 
 ## Documentation
 

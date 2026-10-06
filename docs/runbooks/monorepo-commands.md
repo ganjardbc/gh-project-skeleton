@@ -47,7 +47,6 @@ The CI workflow (`.github/workflows/ci.yml`) uses a path filter to decide which 
 - `prepare`: detects the changed paths and exposes outputs that gate the later jobs.
 - `api`: runs only when the backend is affected (directly, through shared-types, or by a root change).
 - `frontend`: runs only when a frontend workspace is affected (directly, through shared-types, or by a root change).
-- `deploy-api`: deploys the API over SSH. Runs only on a push to `main` or `master`, after `api` succeeds.
 - `summary`: always runs and writes what ran, what was skipped, and why to `GITHUB_STEP_SUMMARY`.
 
 ### Quick check for a pull request
