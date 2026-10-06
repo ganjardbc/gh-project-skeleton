@@ -132,6 +132,20 @@ The frontend check is for UX only; the API enforces permissions independently.
 
 The generator also writes `components/HelloWorld.vue`, a `message` field in the store, and a template `README.md`. Replace or delete them once the module has real content.
 
+## Reference Implementation
+
+`src/modules/user` is the model for a CRUD module. Read it before writing or fixing a module.
+
+| File | Copy from it |
+|---|---|
+| `services/api.ts` | One function per endpoint, full `/api/v1/...` paths, the shared axios client |
+| `services/rbac.ts` | Permission code constants and the `PERMISSIONS` array |
+| `services/menu.ts` | Sidebar entry with `group`, `order`, and `permissions` |
+| `router/index.ts` | Routes with `meta.layout` and `meta.permission` |
+| `pages/index.vue`, `create.vue`, `edit.vue`, `detail.vue` | List, form, and detail page layout |
+
+Do not copy `components/HelloWorld.vue` or the `message` field in `stores/state.ts`. They are generator leftovers that were never removed from this module.
+
 ## Environment
 
 `apps/admin/.env` (template: `.env.sample`):

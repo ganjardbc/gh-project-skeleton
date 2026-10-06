@@ -107,6 +107,22 @@ Read it with `@CurrentUser()` or a single field with `@CurrentUser('merchant_id'
 - **Multi-step writes**: use the callback form, `this.prisma.$transaction(async (tx) => { ... })`, and call `tx`, not `this.prisma`, inside it.
 - **Swagger**: `@ApiTags` on every controller, `@ApiProperty` on every DTO field.
 
+## Reference Implementations
+
+The `users` module is the model for tenant-owned resources. Read it before writing or fixing a module.
+
+| File | Copy from it |
+|---|---|
+| `src/users/users.controller.ts` | Class and handler decorators, `@CurrentUser('merchant_id')` and `@CurrentUser('id')` passed to the service |
+| `src/users/users.service.ts` | `where` shared by `findMany` and `count`, the scoped `findOne` called before every update and delete, uniqueness checks, audit columns, stripping `password_hash` |
+| `src/users/dto/create-user.dto.ts` | Validation decorators with `@ApiProperty` |
+| `src/users/users.service.spec.ts` | The hand-built Prisma mock and the cross-merchant cases |
+
+Do not copy:
+
+- The `any` parameter of `attachSignedUrl` in `users.service.ts`. Type new helpers.
+- `SettingsController`'s permission codes: they are missing from the seed (see Gotchas).
+
 ## Common Module
 
 | Component | Purpose |

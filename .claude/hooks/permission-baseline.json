@@ -1,0 +1,16 @@
+[
+  "dashboard.view",
+  "merchants.detail",
+  "permission.update",
+  "profile.create",
+  "profile.delete",
+  "profile.read",
+  "profile.update",
+  "role.detail",
+  "settings.account.deactivate",
+  "settings.email.update",
+  "settings.password.update",
+  "settings.profile.read",
+  "settings.profile.update",
+  "settings.site.update"
+]
