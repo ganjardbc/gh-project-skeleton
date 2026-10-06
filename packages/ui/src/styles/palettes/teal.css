@@ -1,0 +1,54 @@
+/* Optional palette: teal. Import after @gh-skeleton/ui/styles.css to override the brand scale. */
+@theme static {
+  --color-primary: #09637E;
+  --color-primary-25: #f0f5f7;
+  --color-primary-50: #e6f0f3;
+  --color-primary-100: #cde1e7;
+  --color-primary-200: #b4d2db;
+  --color-primary-300: #8fb5c7;
+  --color-primary-400: #5a94a8;
+  --color-primary-500: #09637E;
+  --color-primary-600: #085a75;
+  --color-primary-700: #07516c;
+  --color-primary-800: #064863;
+  --color-primary-900: #042d3f;
+
+  --color-secondary: #088395;
+  --color-secondary-25: #f0f6f7;
+  --color-secondary-50: #e6f1f3;
+  --color-secondary-100: #cde5e9;
+  --color-secondary-200: #b4d9df;
+  --color-secondary-300: #8fbcc9;
+  --color-secondary-400: #5a9fb3;
+  --color-secondary-500: #088395;
+  --color-secondary-600: #077a8a;
+  --color-secondary-700: #06717f;
+  --color-secondary-800: #056874;
+  --color-secondary-900: #034249;
+
+  --color-accent: #7AB2B2;
+  --color-accent-25: #f5f9f9;
+  --color-accent-50: #ecf3f3;
+  --color-accent-100: #dce7e7;
+  --color-accent-200: #ccdcdc;
+  --color-accent-300: #b3cece;
+  --color-accent-400: #94bfbf;
+  --color-accent-500: #7AB2B2;
+  --color-accent-600: #6fa5a5;
+  --color-accent-700: #649898;
+  --color-accent-800: #598b8b;
+  --color-accent-900: #3d5c5c;
+
+  --color-tertiary: #EBF4F6;
+  --color-tertiary-25: #fdfefe;
+  --color-tertiary-50: #fbfdfe;
+  --color-tertiary-100: #f7fbfc;
+  --color-tertiary-200: #f3f9fa;
+  --color-tertiary-300: #eff7f8;
+  --color-tertiary-400: #e9f5f7;
+  --color-tertiary-500: #EBF4F6;
+  --color-tertiary-600: #d9ecf0;
+  --color-tertiary-700: #c7e4ea;
+  --color-tertiary-800: #b5dce4;
+  --color-tertiary-900: #8fc9d8;
+}

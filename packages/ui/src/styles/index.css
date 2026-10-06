@@ -1,0 +1,13 @@
+/*
+ * Entry stylesheet. Import it right after Tailwind in the app's main CSS:
+ *
+ *   @import "tailwindcss";
+ *   @import "@gh-skeleton/ui/styles.css";
+ */
+@import "./tokens.css";
+
+/* Dark mode is class-based: useTheme() toggles `.dark` on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Let Tailwind see the classes used inside the package's components. */
+@source "../";

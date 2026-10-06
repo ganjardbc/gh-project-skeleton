@@ -1,0 +1,44 @@
+{
+  "name": "@gh-skeleton/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./prime": "./src/prime/index.ts",
+    "./theme-script": "./src/composables/themeScript.ts",
+    "./resolver": {
+      "types": "./resolver.d.ts",
+      "default": "./resolver.js"
+    },
+    "./styles.css": "./src/styles/index.css",
+    "./palettes/*.css": "./src/styles/palettes/*.css"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@primeuix/themes": "^1.2.3",
+    "primevue": "^4.3.7",
+    "tailwindcss": "^4.1.12",
+    "vue": "^3.5.18"
+  },
+  "peerDependenciesMeta": {
+    "@primeuix/themes": {
+      "optional": true
+    },
+    "primevue": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@primeuix/themes": "^1.2.3",
+    "@vue/tsconfig": "^0.7.0",
+    "primevue": "^4.3.7",
+    "typescript": "~5.8.3",
+    "vue": "^3.5.18",
+    "vue-tsc": "^3.0.5"
+  }
+}

@@ -1,0 +1,20 @@
+@import "./tailwind.css";
+@import "primeicons/primeicons.css";
+
+:root {
+  --p-popover-gutter: 0 !important;
+}
+
+html {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#layout-footer {
+  display: none;
+}
+
+#layout-footer:not(:empty) {
+  display: block;
+}

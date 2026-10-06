@@ -1,0 +1,58 @@
+@import "tailwindcss";
+@import "@gh-skeleton/ui/styles.css";
+
+html {
+  scroll-behavior: smooth;
+  /* Keep anchor targets clear of the fixed header. */
+  scroll-padding-top: 4rem;
+}
+
+/* Long-form text rendered from Markdown (content/). */
+.prose-legal {
+  @apply text-base leading-relaxed text-gray-600 dark:text-gray-300;
+}
+
+.prose-legal h2 {
+  @apply mt-10 mb-3 text-xl font-semibold text-navy dark:text-white;
+}
+
+.prose-legal h3 {
+  @apply mt-6 mb-2 text-lg font-semibold text-navy dark:text-white;
+}
+
+.prose-legal p {
+  @apply mb-4;
+}
+
+.prose-legal ul {
+  @apply mb-4 list-disc pl-6 space-y-1;
+}
+
+.prose-legal ol {
+  @apply mb-4 list-decimal pl-6 space-y-1;
+}
+
+.prose-legal a {
+  @apply text-primary-800 dark:text-primary-400 underline;
+}
+
+.prose-legal h2 a,
+.prose-legal h3 a {
+  @apply text-inherit no-underline;
+}
+
+.prose-legal strong {
+  @apply font-semibold text-gray-900 dark:text-white;
+}
+
+.prose-legal blockquote {
+  @apply mb-6 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-800 dark:border-orange-500/30 dark:bg-orange-500/10 dark:text-orange-200;
+}
+
+.prose-legal blockquote p {
+  @apply mb-0;
+}
+
+.prose-legal blockquote strong {
+  @apply text-inherit;
+}

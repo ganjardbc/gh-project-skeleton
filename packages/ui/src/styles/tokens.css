@@ -1,0 +1,73 @@
+/*
+ * Design tokens for @gh-skeleton/ui. See DESIGN.md at the repo root.
+ * Every --color-* entry generates the matching Tailwind utilities
+ * (bg-primary-500, text-navy, border-dark-line, ...).
+ *
+ * `static` keeps every variable in the output even when no utility uses it.
+ * The PrimeVue preset reads the brand scales through var(), which Tailwind
+ * cannot see; without it, unused shades are dropped and PrimeVue states that
+ * depend on them (e.g. the dark-mode button hover, primary-300) lose their color.
+ */
+@theme static {
+  /* Brand scale (orange). 500 is the base; 600 is hover. */
+  --color-primary: #FE7A36;
+  --color-primary-25: #FEF5F0;
+  --color-primary-50: #FEE9E0;
+  --color-primary-100: #FDD4C1;
+  --color-primary-200: #FCBFA2;
+  --color-primary-300: #FBAA83;
+  --color-primary-400: #FA955E;
+  --color-primary-500: #FE7A36;
+  --color-primary-600: #E66A2E;
+  --color-primary-700: #CC5A26;
+  --color-primary-800: #B24A1E;
+  --color-primary-900: #983A16;
+
+  --color-secondary: #3652AD;
+  --color-secondary-25: #F0F2F9;
+  --color-secondary-50: #E1E5F3;
+  --color-secondary-100: #C3CBE7;
+  --color-secondary-200: #A5B1DB;
+  --color-secondary-300: #8797CF;
+  --color-secondary-400: #697DC3;
+  --color-secondary-500: #3652AD;
+  --color-secondary-600: #304A9B;
+  --color-secondary-700: #284289;
+  --color-secondary-800: #203A77;
+  --color-secondary-900: #183265;
+
+  --color-accent: #280274;
+  --color-accent-25: #F5F0FB;
+  --color-accent-50: #EBE1F7;
+  --color-accent-100: #D7C3EF;
+  --color-accent-200: #C3A5E7;
+  --color-accent-300: #AF87DF;
+  --color-accent-400: #9B69D7;
+  --color-accent-500: #280274;
+  --color-accent-600: #240268;
+  --color-accent-700: #20025C;
+  --color-accent-800: #1C0250;
+  --color-accent-900: #180244;
+
+  --color-tertiary: #E9F6FF;
+  --color-tertiary-25: #FDFBFF;
+  --color-tertiary-50: #FBFAFF;
+  --color-tertiary-100: #F7F5FF;
+  --color-tertiary-200: #F3F0FF;
+  --color-tertiary-300: #EFEBFF;
+  --color-tertiary-400: #EBE6FF;
+  --color-tertiary-500: #E9F6FF;
+  --color-tertiary-600: #D1E8FF;
+  --color-tertiary-700: #B9DAFF;
+  --color-tertiary-800: #A1CCFF;
+  --color-tertiary-900: #89BEFF;
+
+  /* Marketing surfaces */
+  --color-cream: #FDF7F2;
+  --color-navy: #293342;
+
+  /* Dark mode surfaces */
+  --color-dark: #0e0e0f;
+  --color-dark-secondary: #18181b;
+  --color-dark-line: #27272a;
+}

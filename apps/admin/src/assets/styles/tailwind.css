@@ -1,0 +1,4 @@
+/* Tailwind + design tokens. SFC <style> blocks @reference this file to use @apply. */
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+@import "@gh-skeleton/ui/styles.css";

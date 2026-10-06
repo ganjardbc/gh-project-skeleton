@@ -1,0 +1,28 @@
+{
+  "name": "@gh-skeleton/landing",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev --port 5174",
+    "build": "nuxt generate",
+    "preview": "nuxt preview",
+    "start": "nuxt preview --host 0.0.0.0 --port ${PORT:-4173}",
+    "typecheck": "nuxt typecheck",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@gh-skeleton/ui": "workspace:*",
+    "@nuxt/content": "^3.16.1",
+    "@nuxtjs/i18n": "^10.6.0",
+    "nuxt": "~4.5.2",
+    "vue": "^3.5.34"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.12",
+    "@types/node": "^24.12.3",
+    "tailwindcss": "^4.1.12",
+    "typescript": "~6.0.2",
+    "vue-tsc": "^3.2.8"
+  }
+}
