@@ -8,6 +8,7 @@ Visual rules, the component catalog, and usage patterns are in the root [`DESIGN
 
 ```bash
 pnpm --filter @gh-skeleton/ui typecheck
+pnpm --filter @gh-skeleton/ui lint   # root eslint.config.mjs; enforces the core/prime import boundary
 ```
 
 There is no build step. The package is source-only: `package.json` exports `.ts`, `.vue`, and `.css` files directly, and each app's Vite compiles them. Verify a change by building the apps:
