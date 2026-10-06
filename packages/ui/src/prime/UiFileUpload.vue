@@ -6,7 +6,7 @@
     <div class="flex items-start gap-4">
       <div
         v-if="previewUrl"
-        class="w-28 h-28 rounded-lg overflow-hidden border border-gray-200 dark:border-dark-line flex-shrink-0"
+        class="w-28 h-28 rounded-lg overflow-hidden border border-gray-200 dark:border-dark-line shrink-0"
       >
         <img
           :src="previewUrl"
@@ -16,7 +16,7 @@
       </div>
       <div
         v-else
-        class="w-28 h-28 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center flex-shrink-0"
+        class="w-28 h-28 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center shrink-0"
       >
         <i class="pi pi-image text-3xl text-gray-400" />
       </div>

@@ -8,10 +8,10 @@
       :variant="option?.value !== active?.value ? 'text' : 'soft'"
       :label="option?.label"
       size="small"
-      class="!border-none"
+      class="border-none!"
       :class="{
-        '!bg-transparent': option?.value !== active?.value,
-        '!bg-white dark:!bg-dark-secondary shadow-sm': option?.value === active?.value
+        'bg-transparent!': option?.value !== active?.value,
+        'bg-white! dark:bg-dark-secondary! shadow-sm': option?.value === active?.value
       }"
       @click="handleChange(option)"
     />
