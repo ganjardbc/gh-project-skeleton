@@ -16,7 +16,7 @@ gh-project-skeleton/
 │   ├── ui/             # @gh-skeleton/ui — design tokens and shared Vue components
 │   ├── shared-types/   # @gh-skeleton/shared-types — API contract types
 │   ├── shared-utils/   # @gh-skeleton/shared-utils — placeholder, empty
-│   └── eslint-config/  # @gh-skeleton/eslint-config — placeholder, empty
+│   └── eslint-config/  # @gh-skeleton/eslint-config — ESLint base for the Vue workspaces
 ├── docs/               # Architecture, API, backend, database, frontend, runbooks
 ├── DESIGN.md           # Visual rules and component catalog
 └── docker-compose.yml  # MySQL + API containers (deployment)
@@ -104,7 +104,7 @@ Run from the repository root.
 pnpm dev          # Start every app in watch mode
 pnpm build        # Build every workspace, in dependency order
 pnpm typecheck    # Type-check every workspace
-pnpm lint         # Lint (only the API defines a lint script)
+pnpm lint         # Lint every workspace
 pnpm test         # Test (only the API defines a test script)
 pnpm format       # Format (only the API defines a format script)
 
@@ -159,16 +159,16 @@ Every successful response is wrapped as `{ success, data }`. Paginated lists ret
 
 - Each app has its own `Dockerfile`.
 - `docker-compose.yml` runs MySQL and the API on a shared Docker network without publishing host ports; it expects a reverse proxy in front. Replace the credentials, `JWT_SECRET`, and `CORS_ORIGIN` in it before use.
-- `.github/workflows/ci.yml` lints, tests, and builds the API when `apps/api`, `packages/shared-types`, or root config changes, then deploys it over SSH on a push to `main`. The frontends have no CI job.
+- `.github/workflows/ci.yml` lints, tests, and builds the API when `apps/api`, `packages/shared-types`, or root config changes, then deploys it over SSH on a push to `main`. A second job lints and type-checks `apps/admin`, `apps/landing`, and `packages/ui` when they change.
 
 ## Documentation
 
 - [`DESIGN.md`](DESIGN.md) — visual rules, component catalog, form and page patterns
 - [`docs/architecture`](docs/architecture) — monorepo structure, tech stack, shared types
-- [`docs/api`](docs/api) — API contract and conventions
-- [`docs/backend`](docs/backend) — NestJS and Prisma guidelines, domain rules
-- [`docs/database`](docs/database) — schema design and ERD
-- [`docs/frontend`](docs/frontend) — routes, layouts, pages
+- [`docs/api`](docs/api) — API conventions
+- [`docs/backend`](docs/backend) — architecture, project context, domain rules
+- [`docs/database`](docs/database) — database configuration and notes
+- [`docs/frontend`](docs/frontend) — spec summary and user flows
 - [`docs/runbooks`](docs/runbooks) — environment and command guides
 - `CLAUDE.md` in the root, each app, and `packages/ui` — conventions for working in that part of the codebase
 

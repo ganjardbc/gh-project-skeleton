@@ -7,6 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 > - `apps/api/CLAUDE.md` — NestJS backend layers, domain rules, API conventions
 > - `apps/landing/CLAUDE.md` — Nuxt landing site rules (static generation, i18n, no PrimeVue)
 > - `packages/ui/CLAUDE.md` — shared component and token rules
+>
+> If anything under `docs/` disagrees with the code or with a CLAUDE.md file, the code and CLAUDE.md are right.
 
 ## What This Is
 
@@ -40,13 +42,23 @@ pnpm --filter @gh-skeleton/shared-types build
 
 `docs/runbooks/monorepo-commands.md` mentions `pnpm dev:web` / `pnpm dev:api`; these are not defined in the root `package.json`. Use the `--filter` form.
 
-`pnpm lint`, `pnpm test`, and `pnpm format` only reach `apps/api`; the frontends define none of those scripts.
+`pnpm lint` covers every workspace: `apps/api` uses `apps/api/eslint.config.mjs` (with `--fix`), and `apps/admin`, `apps/landing`, and `packages/ui` use the root `eslint.config.mjs`, which builds on `packages/eslint-config/vue.mjs` and holds the import boundaries between the packages. `pnpm test` and `pnpm format` only reach `apps/api`.
 
 Scaffold a frontend module from `apps/admin` (the Hygen templates live in `apps/admin/_templates`):
 
 ```bash
 pnpm --filter gh-skeleton-app new-module
 ```
+
+## Claude Code Setup
+
+`.claude/` is checked in:
+
+- `settings.json` — a `PostToolUse` hook lints each edited file (`hooks/lint-file.mjs`), and a `Stop` hook typechecks the workspaces with uncommitted changes (`hooks/typecheck-changed.mjs`). Both feed their errors back to Claude.
+- `skills/` — `new-api-module`, `new-admin-module`, `add-permission`. Use them for those tasks.
+- `agents/convention-reviewer.md` — reviews a diff against the rules in the CLAUDE.md files.
+
+Before finishing a change, run lint, typecheck, and (for `apps/api`) test in the workspaces you touched.
 
 ## Architecture Overview
 
