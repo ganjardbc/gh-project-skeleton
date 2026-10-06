@@ -7,7 +7,7 @@
       <Image :src="defaultLogo" alt="Image" class="w-58" />
     </router-link>
     <div class="w-full text-lg text-gray-400 text-center">
-      The simple point of sale for UMKM.
+      Your multi-tenant workspace.
     </div>
   </div>
 </template>
