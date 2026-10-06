@@ -20,7 +20,7 @@ const en: Messages = {
     stats: {
       pengguna: 'Active Users',
       transaksi: 'Permissions',
-      outlet: 'Merchants',
+      merchant: 'Merchants',
       tahun: 'Experience',
     },
     kepercayaan: 'Trusted by thousands of developers and merchants across Indonesia',

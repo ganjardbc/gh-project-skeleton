@@ -68,7 +68,7 @@ const { loginUrl, registerUrl } = useWebLinks()
 const stats = computed(() => [
   { value: '10rb+', label: t.value.hero.stats.pengguna },
   { value: '500rb+', label: t.value.hero.stats.transaksi },
-  { value: '5rb+', label: t.value.hero.stats.outlet },
+  { value: '5rb+', label: t.value.hero.stats.merchant },
   { value: '5+', label: t.value.hero.stats.tahun },
 ])
 </script>

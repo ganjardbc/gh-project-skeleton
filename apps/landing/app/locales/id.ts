@@ -18,7 +18,7 @@ const id = {
     stats: {
       pengguna: 'Pengguna Aktif',
       transaksi: 'Hak Akses',
-      outlet: 'Merchant',
+      merchant: 'Merchant',
       tahun: 'Pengalaman',
     },
     kepercayaan: 'Dipercaya oleh ribuan developer dan merchant di seluruh Indonesia',
