@@ -17,6 +17,8 @@
     "db:generate": "pnpm --filter gh-skeleton-api db:generate"
   },
   "devDependencies": {
+    "@gh-skeleton/eslint-config": "workspace:*",
+    "eslint": "^9.18.0",
     "turbo": "^2.4.0"
   }
 }
