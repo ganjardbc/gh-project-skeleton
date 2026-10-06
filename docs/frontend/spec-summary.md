@@ -52,8 +52,7 @@ Client-side checks read only the **first** role's permissions. The API checks al
 ## Known gaps
 
 - The search box on list pages updates its value but does not filter: the handler only logs.
-- `dashboard` and `landing` are placeholder pages. The `landing` page still shows point-of-sale wording.
-- `dashboard` contains chart components and report types that no page renders and no API endpoint serves.
+- `dashboard` and `landing` are placeholder pages.
 
 ## Related documents
 
