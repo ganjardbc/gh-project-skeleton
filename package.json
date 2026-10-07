@@ -2,6 +2,9 @@
   "name": "gh-project-skeleton",
   "private": true,
   "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22.19"
+  },
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
