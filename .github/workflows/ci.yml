@@ -127,7 +127,7 @@ jobs:
           key: ${{ runner.os }}-api-dist-${{ github.sha }}
 
   frontend:
-    name: Lint and typecheck frontends
+    name: Lint, typecheck, and test frontends
     runs-on: ubuntu-latest
     needs: prepare
     if: needs.prepare.outputs.frontend == 'true'
@@ -155,6 +155,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm --filter gh-skeleton-app --filter @gh-skeleton/landing --filter @gh-skeleton/ui typecheck
+
+      - name: Test
+        run: pnpm --filter gh-skeleton-app test
 
   summary:
     runs-on: ubuntu-latest
