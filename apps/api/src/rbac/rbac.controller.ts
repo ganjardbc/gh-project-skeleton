@@ -47,7 +47,7 @@ export class RbacController {
   }
 
   @Get('roles')
-  // @RequirePermission('role.read')
+  @RequirePermission('role.read')
   @ApiOperation({ summary: 'List all roles with their permissions' })
   @ApiResponse({ status: 200, description: 'Return all roles (paginated)' })
   findAllRoles(@Query() pagination: PaginationDto) {
@@ -170,21 +170,35 @@ export class RbacController {
   @RequirePermission('role.assign')
   @ApiOperation({ summary: 'Assign a role to a user' })
   @ApiResponse({ status: 201, description: 'Role assigned to user' })
+  @ApiResponse({
+    status: 403,
+    description: 'The role carries a permission the caller does not hold',
+  })
+  @ApiResponse({ status: 404, description: 'User or role not found' })
   @ApiResponse({ status: 409, description: 'Role already assigned' })
   assignRoleToUser(
     @Body() dto: AssignRoleDto,
+    @CurrentUser('merchant_id') merchantId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.rbacService.assignRoleToUser(dto, userId);
+    return this.rbacService.assignRoleToUser(dto, merchantId, userId);
   }
 
   @Delete('user-roles')
   @RequirePermission('role.assign')
   @ApiOperation({ summary: 'Revoke a role from a user' })
   @ApiResponse({ status: 200, description: 'Role revoked from user' })
-  @ApiResponse({ status: 404, description: 'Assignment not found' })
-  revokeRoleFromUser(@Body() dto: AssignRoleDto) {
-    return this.rbacService.revokeRoleFromUser(dto);
+  @ApiResponse({
+    status: 403,
+    description: 'The role carries a permission the caller does not hold',
+  })
+  @ApiResponse({ status: 404, description: 'User or assignment not found' })
+  revokeRoleFromUser(
+    @Body() dto: AssignRoleDto,
+    @CurrentUser('merchant_id') merchantId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    return this.rbacService.revokeRoleFromUser(dto, merchantId, userId);
   }
 
   @Get('users/:userId/roles')
@@ -193,7 +207,11 @@ export class RbacController {
     summary: 'List all roles assigned to a user (with permissions)',
   })
   @ApiResponse({ status: 200, description: 'Return user role assignments' })
-  getUserRoles(@Param('userId') userId: string) {
-    return this.rbacService.getUserRoles(userId);
+  @ApiResponse({ status: 404, description: 'User not found' })
+  getUserRoles(
+    @Param('userId') userId: string,
+    @CurrentUser('merchant_id') merchantId: string,
+  ) {
+    return this.rbacService.getUserRoles(userId, merchantId);
   }
 }

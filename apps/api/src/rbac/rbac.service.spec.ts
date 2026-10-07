@@ -1,4 +1,8 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { RbacService } from './rbac.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
 
@@ -17,6 +21,7 @@ describe('RbacService', () => {
       jest.Mock
     >;
     role_permissions: Record<'findFirst' | 'create' | 'delete', jest.Mock>;
+    users: Record<'findFirst', jest.Mock>;
     user_roles: Record<
       'findFirst' | 'findMany' | 'create' | 'delete',
       jest.Mock
@@ -46,6 +51,7 @@ describe('RbacService', () => {
         create: jest.fn(),
         delete: jest.fn(),
       },
+      users: { findFirst: jest.fn().mockResolvedValue(null) },
       user_roles: {
         findFirst: jest.fn().mockResolvedValue(null),
         findMany: jest.fn().mockResolvedValue([]),
@@ -257,59 +263,178 @@ describe('RbacService', () => {
     });
   });
 
+  /**
+   * Roles are global, but a user belongs to one merchant. Role assignment is
+   * scoped to the caller's merchant and limited to roles the caller could hold.
+   */
   describe('user roles', () => {
+    const MERCHANT_A = 'merchant-a';
+    const MERCHANT_B = 'merchant-b';
+    const ACTOR = 'actor';
     const dto = { user_id: 'user-1', role_id: 'role-1' };
 
-    it('does not assign an unknown role', async () => {
-      await expect(service.assignRoleToUser(dto, 'actor')).rejects.toThrow(
-        NotFoundException,
+    const roleWith = (...codes: string[]) => ({
+      id: 'role-1',
+      name: 'role',
+      role_permissions: codes.map((code) => ({ permissions: { code } })),
+    });
+    const actorHolds = (...codes: string[]) =>
+      prisma.user_roles.findMany.mockResolvedValue([
+        { roles: roleWith(...codes) },
+      ]);
+
+    beforeEach(() => {
+      // The target user is in merchant A, the role exists, and the actor holds its permissions.
+      prisma.users.findFirst.mockImplementation(
+        ({ where }: { where: { id: string; merchant_id: string } }) =>
+          Promise.resolve(
+            where.merchant_id === MERCHANT_A ? { id: where.id } : null,
+          ),
       );
-      expect(prisma.user_roles.create).not.toHaveBeenCalled();
+      prisma.roles.findFirst.mockResolvedValue(roleWith('user.read'));
+      actorHolds('user.read', 'role.assign');
     });
 
-    it('rejects assigning the same role twice', async () => {
-      prisma.roles.findFirst.mockResolvedValue({ id: 'role-1' });
-      prisma.user_roles.findFirst.mockResolvedValue(dto);
+    describe('assignRoleToUser', () => {
+      it('looks the target user up by id and merchant_id together', async () => {
+        await service.assignRoleToUser(dto, MERCHANT_A, ACTOR);
 
-      await expect(service.assignRoleToUser(dto, 'actor')).rejects.toThrow(
-        ConflictException,
-      );
-      expect(prisma.user_roles.create).not.toHaveBeenCalled();
-    });
+        expect(prisma.users.findFirst).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: 'user-1', merchant_id: MERCHANT_A },
+          }),
+        );
+      });
 
-    it('assigns a role with audit columns', async () => {
-      prisma.roles.findFirst.mockResolvedValue({ id: 'role-1' });
+      it('does not assign a role to a user of another merchant', async () => {
+        await expect(
+          service.assignRoleToUser(dto, MERCHANT_B, ACTOR),
+        ).rejects.toThrow(NotFoundException);
+        expect(prisma.user_roles.create).not.toHaveBeenCalled();
+      });
 
-      await service.assignRoleToUser(dto, 'actor');
+      it('does not assign an unknown role', async () => {
+        prisma.roles.findFirst.mockResolvedValue(null);
 
-      expect(prisma.user_roles.create).toHaveBeenCalledWith({
-        data: { ...dto, created_by: 'actor', updated_by: 'actor' },
+        await expect(
+          service.assignRoleToUser(dto, MERCHANT_A, ACTOR),
+        ).rejects.toThrow(NotFoundException);
+        expect(prisma.user_roles.create).not.toHaveBeenCalled();
+      });
+
+      it('does not assign a role that carries a permission the actor lacks', async () => {
+        prisma.roles.findFirst.mockResolvedValue(
+          roleWith('user.read', 'merchants.delete'),
+        );
+
+        await expect(
+          service.assignRoleToUser(dto, MERCHANT_A, ACTOR),
+        ).rejects.toThrow(ForbiddenException);
+        expect(prisma.user_roles.create).not.toHaveBeenCalled();
+      });
+
+      it('does not let a user raise their own role', async () => {
+        prisma.roles.findFirst.mockResolvedValue(roleWith('permission.delete'));
+
+        await expect(
+          service.assignRoleToUser(
+            { user_id: ACTOR, role_id: 'role-1' },
+            MERCHANT_A,
+            ACTOR,
+          ),
+        ).rejects.toThrow(ForbiddenException);
+        expect(prisma.user_roles.create).not.toHaveBeenCalled();
+      });
+
+      it('reads the actor’s permissions across all of their roles', async () => {
+        prisma.roles.findFirst.mockResolvedValue(
+          roleWith('user.read', 'upload.read'),
+        );
+        prisma.user_roles.findMany.mockResolvedValue([
+          { roles: roleWith('user.read') },
+          { roles: roleWith('upload.read') },
+        ]);
+
+        await service.assignRoleToUser(dto, MERCHANT_A, ACTOR);
+
+        expect(prisma.user_roles.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({ where: { user_id: ACTOR } }),
+        );
+        expect(prisma.user_roles.create).toHaveBeenCalled();
+      });
+
+      it('rejects assigning the same role twice', async () => {
+        prisma.user_roles.findFirst.mockResolvedValue(dto);
+
+        await expect(
+          service.assignRoleToUser(dto, MERCHANT_A, ACTOR),
+        ).rejects.toThrow(ConflictException);
+        expect(prisma.user_roles.create).not.toHaveBeenCalled();
+      });
+
+      it('assigns a role with audit columns', async () => {
+        await service.assignRoleToUser(dto, MERCHANT_A, ACTOR);
+
+        expect(prisma.user_roles.create).toHaveBeenCalledWith({
+          data: { ...dto, created_by: ACTOR, updated_by: ACTOR },
+        });
       });
     });
 
-    it('does not revoke an assignment that does not exist', async () => {
-      await expect(service.revokeRoleFromUser(dto)).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(prisma.user_roles.delete).not.toHaveBeenCalled();
-    });
+    describe('revokeRoleFromUser', () => {
+      beforeEach(() => {
+        prisma.user_roles.findFirst.mockResolvedValue(dto);
+      });
 
-    it('revokes by the composite key', async () => {
-      prisma.user_roles.findFirst.mockResolvedValue(dto);
+      it('does not revoke a role from a user of another merchant', async () => {
+        await expect(
+          service.revokeRoleFromUser(dto, MERCHANT_B, ACTOR),
+        ).rejects.toThrow(NotFoundException);
+        expect(prisma.user_roles.delete).not.toHaveBeenCalled();
+      });
 
-      await service.revokeRoleFromUser(dto);
+      it('does not revoke a role that carries a permission the actor lacks', async () => {
+        prisma.roles.findFirst.mockResolvedValue(roleWith('merchants.delete'));
 
-      expect(prisma.user_roles.delete).toHaveBeenCalledWith({
-        where: { user_id_role_id: dto },
+        await expect(
+          service.revokeRoleFromUser(dto, MERCHANT_A, ACTOR),
+        ).rejects.toThrow(ForbiddenException);
+        expect(prisma.user_roles.delete).not.toHaveBeenCalled();
+      });
+
+      it('does not revoke an assignment that does not exist', async () => {
+        prisma.user_roles.findFirst.mockResolvedValue(null);
+
+        await expect(
+          service.revokeRoleFromUser(dto, MERCHANT_A, ACTOR),
+        ).rejects.toThrow(NotFoundException);
+        expect(prisma.user_roles.delete).not.toHaveBeenCalled();
+      });
+
+      it('revokes by the composite key', async () => {
+        await service.revokeRoleFromUser(dto, MERCHANT_A, ACTOR);
+
+        expect(prisma.user_roles.delete).toHaveBeenCalledWith({
+          where: { user_id_role_id: dto },
+        });
       });
     });
 
-    it('lists the roles of one user', async () => {
-      await service.getUserRoles('user-1');
+    describe('getUserRoles', () => {
+      it('does not list the roles of a user of another merchant', async () => {
+        await expect(
+          service.getUserRoles('user-1', MERCHANT_B),
+        ).rejects.toThrow(NotFoundException);
+        expect(prisma.user_roles.findMany).not.toHaveBeenCalled();
+      });
 
-      expect(prisma.user_roles.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { user_id: 'user-1' } }),
-      );
+      it('lists the roles of a user of the caller’s merchant', async () => {
+        await service.getUserRoles('user-1', MERCHANT_A);
+
+        expect(prisma.user_roles.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({ where: { user_id: 'user-1' } }),
+        );
+      });
     });
   });
 });

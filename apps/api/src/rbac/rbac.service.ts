@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -216,8 +217,61 @@ export class RbacService {
   //  USER ↔ ROLES
   // ─────────────────────────────────────────────
 
-  async assignRoleToUser(dto: AssignRoleDto, assignedBy: string) {
-    await this.findOneRole(dto.role_id);
+  /**
+   * Roles are global, but a user belongs to one merchant: a role may only be
+   * assigned to, revoked from, or listed for a user of the caller's merchant.
+   */
+  private async assertUserInMerchant(userId: string, merchantId: string) {
+    const user = await this.prisma.users.findFirst({
+      where: { id: userId, merchant_id: merchantId },
+      select: { id: true },
+    });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+  }
+
+  /**
+   * A caller may hand out or take away a role only when they hold every
+   * permission in it. Without this, `role.assign` alone is enough to give
+   * oneself any role, including `admin`.
+   */
+  private async assertActorHoldsRole(roleId: string, actorId: string) {
+    const role = await this.findOneRole(roleId);
+
+    const actorRoles = await this.prisma.user_roles.findMany({
+      where: { user_id: actorId },
+      include: {
+        roles: {
+          include: {
+            role_permissions: { include: { permissions: true } },
+          },
+        },
+      },
+    });
+    const held = new Set(
+      actorRoles.flatMap((userRole) =>
+        userRole.roles.role_permissions.map((rp) => rp.permissions.code),
+      ),
+    );
+
+    const exceeds = role.role_permissions.some(
+      (rp) => !held.has(rp.permissions.code),
+    );
+    if (exceeds) {
+      throw new ForbiddenException(
+        'You cannot assign or revoke a role with permissions you do not hold',
+      );
+    }
+  }
+
+  async assignRoleToUser(
+    dto: AssignRoleDto,
+    merchantId: string,
+    assignedBy: string,
+  ) {
+    await this.assertUserInMerchant(dto.user_id, merchantId);
+    await this.assertActorHoldsRole(dto.role_id, assignedBy);
 
     const existing = await this.prisma.user_roles.findFirst({
       where: {
@@ -239,7 +293,13 @@ export class RbacService {
     });
   }
 
-  async revokeRoleFromUser(dto: AssignRoleDto) {
+  async revokeRoleFromUser(
+    dto: AssignRoleDto,
+    merchantId: string,
+    revokedBy: string,
+  ) {
+    await this.assertUserInMerchant(dto.user_id, merchantId);
+
     const existing = await this.prisma.user_roles.findFirst({
       where: {
         user_id: dto.user_id,
@@ -249,6 +309,8 @@ export class RbacService {
     if (!existing) {
       throw new NotFoundException('Role assignment not found');
     }
+
+    await this.assertActorHoldsRole(dto.role_id, revokedBy);
 
     await this.prisma.user_roles.delete({
       where: {
@@ -262,7 +324,9 @@ export class RbacService {
     return { message: 'Role revoked from user successfully' };
   }
 
-  async getUserRoles(userId: string) {
+  async getUserRoles(userId: string, merchantId: string) {
+    await this.assertUserInMerchant(userId, merchantId);
+
     return this.prisma.user_roles.findMany({
       where: { user_id: userId },
       include: {
