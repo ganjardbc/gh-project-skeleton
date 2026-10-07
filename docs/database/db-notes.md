@@ -64,3 +64,23 @@ pnpm db:seed       # roles, permissions, demo merchant and users
 pnpm db:generate   # regenerate the Prisma client
 pnpm db:studio     # browse data
 ```
+
+### Migration baseline
+
+The history starts at one migration, `20261007000000_init`, which creates the eight tables above. It replaced four earlier migrations that created and then dropped tables from a previous project.
+
+A new database needs nothing special: `pnpm db:migrate` applies the baseline.
+
+A database created from the earlier migrations already has these tables, but its `_prisma_migrations` table lists migrations that no longer exist. Fix the history once, without changing any data:
+
+```bash
+# 1. Back up the database.
+# 2. Clear the old history rows (run in MySQL):
+#      DELETE FROM _prisma_migrations;
+# 3. Record the baseline as already applied:
+pnpm --filter gh-skeleton-api exec prisma migrate resolve --applied 20261007000000_init
+# 4. Confirm:
+pnpm --filter gh-skeleton-api exec prisma migrate status
+```
+
+`migrate status` must report that the database schema is up to date. On a local database with no data worth keeping, drop and recreate the database instead, then run `pnpm db:migrate` and `pnpm db:seed`.
