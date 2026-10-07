@@ -38,15 +38,18 @@ A component used by one app only does not belong here. Put it in that app (`apps
 
    Without the resolver entry, admin templates do not auto-import the component.
 
-4. **Catalog.** Add a row to the matching table in `DESIGN.md` section 8 (Core or PrimeVue).
+4. **Test.** For a component with variants, conditional rendering, or accessibility attributes, add `src/<entry>/__tests__/Ui<Name>.spec.ts`, modelled on `src/core/__tests__/UiButton.spec.ts`.
 
-5. **New dependency.** A new peer dependency goes in `packages/ui/package.json` and in `resolve.dedupe` in `apps/admin/vite.config.ts`. A new top-level file needed at build time goes in the `COPY` lines of both Dockerfiles.
+5. **Catalog.** Add a row to the matching table in `DESIGN.md` section 8 (Core or PrimeVue).
+
+6. **New dependency.** A new peer dependency goes in `packages/ui/package.json` and in `resolve.dedupe` in `apps/admin/vite.config.ts`. A new top-level file needed at build time goes in the `COPY` lines of both Dockerfiles.
 
 ## Verify
 
 ```bash
 pnpm --filter @gh-skeleton/ui lint
 pnpm --filter @gh-skeleton/ui typecheck
+pnpm --filter @gh-skeleton/ui test
 pnpm --filter gh-skeleton-app build
 pnpm --filter @gh-skeleton/landing build
 ```

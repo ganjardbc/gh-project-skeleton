@@ -96,6 +96,7 @@ STORAGE_DRIVER=local
 - [ ] `CORS_ORIGIN` includes the admin and landing URLs
 - [ ] `STORAGE_DRIVER` is set, with the S3 variables if it is `s3`
 - [ ] Migrations and seed have run: `pnpm db:migrate && pnpm db:seed`
+- [ ] In production, `NODE_ENV=production` is set before seeding, so the demo accounts are not created. The first real account comes from the registration form, which creates a merchant and its `owner`
 
 ## Troubleshooting
 

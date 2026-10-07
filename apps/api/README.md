@@ -62,7 +62,7 @@ prisma/
 
 ## Seeded accounts
 
-`pnpm db:seed` creates the roles `admin`, `owner`, and `viewer`, a demo merchant, and one user per role. See `prisma/seed.ts` for the credentials.
+`pnpm db:seed` creates the roles `admin`, `owner`, and `viewer`, a demo merchant, and one user per role. See `prisma/seed.ts` for the credentials. With `NODE_ENV=production` only the roles and permissions are created; `SEED_DEMO_DATA=true` overrides that.
 
 ## Deployment
 

@@ -25,109 +25,19 @@ const adapter = new PrismaMariaDb({
 
 const prisma = new PrismaClient({ adapter });
 
-async function main() {
-  console.log('🌱 Starting database seeding...\n');
+// Demo merchants, users, and notifications use a known password. They are skipped when
+// NODE_ENV is production unless SEED_DEMO_DATA=true is set on purpose.
+const seedDemo =
+  process.env.NODE_ENV !== 'production' || process.env.SEED_DEMO_DATA === 'true';
 
-  // 1. Create Merchants
-  console.log('📦 Creating merchants...');
+const ROLE_ADMIN_ID = '550e8400-e29b-41d4-a716-446655440081';
+const ROLE_OWNER_ID = '550e8400-e29b-41d4-a716-446655440080';
+const ROLE_VIEWER_ID = '550e8400-e29b-41d4-a716-446655440084';
 
-  const adminMerchant = await prisma.merchants.upsert({
-    where: { slug: 'system-admin' },
-    update: {},
-    create: {
-      id: '550e8400-e29b-41d4-a716-446655440000',
-      name: 'System Admin',
-      slug: 'system-admin',
-    },
-  });
-  console.log(
-    `✅ Merchant created: ${adminMerchant.name} (${adminMerchant.slug})`,
-  );
-
-  const demoMerchant = await prisma.merchants.upsert({
-    where: { slug: 'demo-company' },
-    update: {},
-    create: {
-      id: '550e8400-e29b-41d4-a716-446655440001',
-      name: 'Demo Company',
-      slug: 'demo-company',
-    },
-  });
-  console.log(
-    `✅ Merchant created: ${demoMerchant.name} (${demoMerchant.slug})\n`,
-  );
-
-  // 2. Create Users
-  console.log('👤 Creating users...');
-
-  const hashedPassword = await bcrypt.hash('password123', 10);
-
-  const adminUser = await prisma.users.upsert({
-    where: {
-      merchant_id_email: {
-        merchant_id: adminMerchant.id,
-        email: 'admin@demo.com',
-      },
-    },
-    update: {},
-    create: {
-      id: '550e8400-e29b-41d4-a716-446655440010',
-      merchant_id: adminMerchant.id,
-      name: 'System Admin',
-      username: 'admin',
-      email: 'admin@demo.com',
-      password_hash: hashedPassword,
-      is_active: true,
-    },
-  });
-  console.log(`✅ User created: ${adminUser.name} (${adminUser.email})`);
-
-  const ownerUser = await prisma.users.upsert({
-    where: {
-      merchant_id_email: {
-        merchant_id: demoMerchant.id,
-        email: 'owner@demo.com',
-      },
-    },
-    update: {},
-    create: {
-      id: '550e8400-e29b-41d4-a716-446655440015',
-      merchant_id: demoMerchant.id,
-      name: 'Owner User',
-      username: 'owner',
-      email: 'owner@demo.com',
-      password_hash: hashedPassword,
-      is_active: true,
-    },
-  });
-  console.log(`✅ User created: ${ownerUser.name} (${ownerUser.email})`);
-
-  const viewerUser = await prisma.users.upsert({
-    where: {
-      merchant_id_email: {
-        merchant_id: demoMerchant.id,
-        email: 'viewer@demo.com',
-      },
-    },
-    update: {},
-    create: {
-      id: '550e8400-e29b-41d4-a716-446655440014',
-      merchant_id: demoMerchant.id,
-      name: 'Viewer User',
-      username: 'viewer',
-      email: 'viewer@demo.com',
-      password_hash: hashedPassword,
-      is_active: true,
-    },
-  });
-  console.log(`✅ User created: ${viewerUser.name} (${viewerUser.email})\n`);
-
-  // 3. Create Roles
+/** Roles, permission codes, and their assignments. Every environment needs these. */
+async function seedRbac() {
+  // Create Roles
   console.log('🔐 Seeding RBAC (roles & permissions)...');
-
-  const ROLE_ADMIN_ID = '550e8400-e29b-41d4-a716-446655440081';
-  const ROLE_OWNER_ID = '550e8400-e29b-41d4-a716-446655440080';
-  const ROLE_VIEWER_ID = '550e8400-e29b-41d4-a716-446655440084';
 
   const rolesData = [
     { id: ROLE_ADMIN_ID, name: 'admin', description: 'Full system access' },
@@ -147,7 +57,7 @@ async function main() {
     console.log(`✅ Role: ${role.name}`);
   }
 
-  // 4. Create Permissions
+  // Create Permissions
   const permissionsData = [
     // Merchant management
     { code: 'merchants.create', description: 'Create merchants' },
@@ -214,7 +124,7 @@ async function main() {
     return found.id;
   };
 
-  // 5. Role → Permissions
+  // Role → Permissions
   console.log('🔗 Assigning permissions to roles...');
 
   const allPermIds = dbPerms.map((p) => p.id);
@@ -285,8 +195,105 @@ async function main() {
     }
   }
   console.log('✅ Role-permission assignments synced\n');
+}
 
-  // 6. User → Roles
+/** Demo merchants, one user per role, and sample notifications. Not for production. */
+async function seedDemoData() {
+  // Create Merchants
+  console.log('📦 Creating merchants...');
+
+  const adminMerchant = await prisma.merchants.upsert({
+    where: { slug: 'system-admin' },
+    update: {},
+    create: {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      name: 'System Admin',
+      slug: 'system-admin',
+    },
+  });
+  console.log(
+    `✅ Merchant created: ${adminMerchant.name} (${adminMerchant.slug})`,
+  );
+
+  const demoMerchant = await prisma.merchants.upsert({
+    where: { slug: 'demo-company' },
+    update: {},
+    create: {
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      name: 'Demo Company',
+      slug: 'demo-company',
+    },
+  });
+  console.log(
+    `✅ Merchant created: ${demoMerchant.name} (${demoMerchant.slug})\n`,
+  );
+
+  // Create Users
+  console.log('👤 Creating users...');
+
+  const hashedPassword = await bcrypt.hash('password123', 10);
+
+  const adminUser = await prisma.users.upsert({
+    where: {
+      merchant_id_email: {
+        merchant_id: adminMerchant.id,
+        email: 'admin@demo.com',
+      },
+    },
+    update: {},
+    create: {
+      id: '550e8400-e29b-41d4-a716-446655440010',
+      merchant_id: adminMerchant.id,
+      name: 'System Admin',
+      username: 'admin',
+      email: 'admin@demo.com',
+      password_hash: hashedPassword,
+      is_active: true,
+    },
+  });
+  console.log(`✅ User created: ${adminUser.name} (${adminUser.email})`);
+
+  const ownerUser = await prisma.users.upsert({
+    where: {
+      merchant_id_email: {
+        merchant_id: demoMerchant.id,
+        email: 'owner@demo.com',
+      },
+    },
+    update: {},
+    create: {
+      id: '550e8400-e29b-41d4-a716-446655440015',
+      merchant_id: demoMerchant.id,
+      name: 'Owner User',
+      username: 'owner',
+      email: 'owner@demo.com',
+      password_hash: hashedPassword,
+      is_active: true,
+    },
+  });
+  console.log(`✅ User created: ${ownerUser.name} (${ownerUser.email})`);
+
+  const viewerUser = await prisma.users.upsert({
+    where: {
+      merchant_id_email: {
+        merchant_id: demoMerchant.id,
+        email: 'viewer@demo.com',
+      },
+    },
+    update: {},
+    create: {
+      id: '550e8400-e29b-41d4-a716-446655440014',
+      merchant_id: demoMerchant.id,
+      name: 'Viewer User',
+      username: 'viewer',
+      email: 'viewer@demo.com',
+      password_hash: hashedPassword,
+      is_active: true,
+    },
+  });
+  console.log(`✅ User created: ${viewerUser.name} (${viewerUser.email})\n`);
+
+  // User → Roles
   console.log('👥 Assigning roles to users...');
 
   const userRolesData = [
@@ -317,7 +324,7 @@ async function main() {
   }
   console.log('✅ User-role assignments synced\n');
 
-  // 7. Sample Notifications
+  // Sample Notifications
   console.log('🔔 Creating sample notifications...');
 
   const sampleNotifications = [
@@ -364,6 +371,20 @@ async function main() {
   console.log(
     `✅ Notifications synced: ${sampleNotifications.length} for each of ${notificationUsers.length} users\n`,
   );
+}
+
+async function main() {
+  console.log('🌱 Starting database seeding...\n');
+
+  await seedRbac();
+
+  if (seedDemo) {
+    await seedDemoData();
+  } else {
+    console.log(
+      '⏭️  Skipping demo merchants, users, and notifications (NODE_ENV=production). Set SEED_DEMO_DATA=true to create them.\n',
+    );
+  }
 
   console.log('🎉 Database seeding completed successfully!');
 }

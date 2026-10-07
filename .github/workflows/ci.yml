@@ -157,7 +157,7 @@ jobs:
         run: pnpm --filter gh-skeleton-app --filter @gh-skeleton/landing --filter @gh-skeleton/ui typecheck
 
       - name: Test
-        run: pnpm --filter gh-skeleton-app test
+        run: pnpm --filter gh-skeleton-app --filter @gh-skeleton/ui test
 
   summary:
     runs-on: ubuntu-latest

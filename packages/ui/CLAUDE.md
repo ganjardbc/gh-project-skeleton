@@ -9,7 +9,10 @@ Visual rules, the component catalog, and usage patterns are in the root [`DESIGN
 ```bash
 pnpm --filter @gh-skeleton/ui typecheck
 pnpm --filter @gh-skeleton/ui lint   # root eslint.config.mjs; enforces the core/prime import boundary
+pnpm --filter @gh-skeleton/ui test   # Vitest + @vue/test-utils, jsdom
 ```
+
+A test is a `*.spec.ts` file in a `__tests__` folder beside the component; `src/core/__tests__/UiButton.spec.ts` is the reference. Assert on what a consumer relies on: the rendered element, attributes, and the class a variant maps to. A new component with variants or conditional rendering gets a spec.
 
 There is no build step. The package is source-only: `package.json` exports `.ts`, `.vue`, and `.css` files directly, and each app's Vite compiles them. Verify a change by building the apps:
 

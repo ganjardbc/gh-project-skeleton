@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Stop hook: run the tests related to uncommitted changes in apps/api (Jest) and apps/admin (Vitest).
+// Stop hook: run the tests related to uncommitted changes in apps/api (Jest), and in apps/admin
+// and packages/ui (Vitest).
 // Exit 2 keeps Claude working until the tests pass.
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
@@ -34,12 +35,18 @@ if (changed.some((file) => /^apps\/api\/(src|prisma)\/.+\.ts$/.test(file))) {
   run(['--filter', 'gh-skeleton-api', 'exec', 'jest', '--onlyChanged', '--passWithNoTests']);
 }
 
-// `vitest related` does the same for the admin app; it takes paths relative to the app.
-const admin = changed
-  .filter((file) => /^apps\/admin\/src\/.+\.(ts|vue)$/.test(file))
-  .map((file) => file.slice('apps/admin/'.length));
-if (admin.length > 0) {
-  run(['--filter', 'gh-skeleton-app', 'exec', 'vitest', 'related', '--run', '--passWithNoTests', ...admin]);
+// `vitest related` does the same for the Vitest workspaces; it takes paths relative to the workspace.
+const vitestWorkspaces = {
+  'apps/admin/': 'gh-skeleton-app',
+  'packages/ui/': '@gh-skeleton/ui',
+};
+for (const [prefix, name] of Object.entries(vitestWorkspaces)) {
+  const files = changed
+    .filter((file) => file.startsWith(`${prefix}src/`) && /\.(ts|vue)$/.test(file))
+    .map((file) => file.slice(prefix.length));
+  if (files.length > 0) {
+    run(['--filter', name, 'exec', 'vitest', 'related', '--run', '--passWithNoTests', ...files]);
+  }
 }
 
 if (failures.length === 0) process.exit(0);

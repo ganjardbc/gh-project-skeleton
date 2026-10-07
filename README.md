@@ -67,6 +67,8 @@ All three use the password `password123`.
 
 The seed also creates the permission codes, the role assignments, and 12 sample notifications per account. It is safe to run again: existing rows are kept. It does reset the permissions of the three seeded roles to the definitions in `apps/api/prisma/seed.ts`.
 
+With `NODE_ENV=production` the seed creates only the roles and permission codes. The demo merchants, accounts, and notifications are skipped, because their password is public. Set `SEED_DEMO_DATA=true` to create them anyway, and change the passwords at once.
+
 ## Environment
 
 **API** — `apps/api/.env` (template: `.env.example`, which lists every variable)
@@ -105,7 +107,7 @@ pnpm dev          # Start every app in watch mode
 pnpm build        # Build every workspace, in dependency order
 pnpm typecheck    # Type-check every workspace
 pnpm lint         # Lint every workspace
-pnpm test         # Test the API (Jest) and the admin app (Vitest)
+pnpm test         # Test the API (Jest), the admin app, and packages/ui (Vitest)
 pnpm format       # Format (only the API defines a format script)
 
 pnpm db:migrate   # prisma migrate dev
@@ -156,7 +158,7 @@ Starting a new project from this skeleton? Rename it first: `/rename-project acm
 
 Things to know:
 
-- The hooks run only while Claude Code is working. Commits made by hand are checked by CI, not by the hooks.
+- The Claude Code hooks run only while Claude Code is working. Commits made by hand go through the Git hooks in `.githooks/` (lint and permission check on commit, typecheck and tests on push), which `pnpm install` enables, and through CI. `--no-verify` skips a Git hook once.
 - The hooks need `node`, `pnpm`, `git`, and installed dependencies.
 - Claude follows the rules in `CLAUDE.md`, so keep those files true. A rule that no longer matches the code produces wrong code. Review what Claude writes before merging it.
 
@@ -188,7 +190,7 @@ Every successful response is wrapped as `{ success, data }`. Paginated lists ret
 
 - Each app has its own `Dockerfile`.
 - `docker-compose.yml` runs MySQL and the API on a shared Docker network without publishing host ports; it expects a reverse proxy in front. Replace the credentials, `JWT_SECRET`, and `CORS_ORIGIN` in it before use.
-- `.github/workflows/ci.yml` lints, tests, and builds the API when `apps/api`, `packages/shared-types`, or root config changes. A second job lints and type-checks `apps/admin`, `apps/landing`, and `packages/ui` when they change, and runs the `apps/admin` tests.
+- `.github/workflows/ci.yml` lints, tests, and builds the API when `apps/api`, `packages/shared-types`, or root config changes. A second job lints and type-checks `apps/admin`, `apps/landing`, and `packages/ui` when they change, and runs the `apps/admin` and `packages/ui` tests.
 
 ## Documentation
 
