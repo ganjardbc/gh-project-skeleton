@@ -86,6 +86,7 @@ Read it with `@CurrentUser()` or a single field with `@CurrentUser('merchant_id'
 ## Domain Rules
 
 - **RBAC**: Flat. `user_roles` is `(user_id, role_id)`; effective permissions are the union across all of a user's roles. Access is granted by permission code, never by role name.
+- **Role assignment**: Roles are global, but assigning, revoking, and listing a user's roles is scoped to the caller's merchant (`RbacService.assertUserInMerchant`). A caller may assign or revoke a role only when they hold every permission in it (`assertActorHoldsRole`); otherwise `role.assign` alone would let anyone take the `admin` role. Keep both checks on any new endpoint that changes `user_roles`.
 - **Registration**: Creates the merchant and the user in one transaction and assigns the `owner` role, which must already exist (run the seed).
 - **Users**: Deleting a user is a soft delete (`is_active = false`). Inactive users cannot log in or pass the JWT guard.
 - **Uploads**: Stored through a driver chosen by `STORAGE_DRIVER` (`local` or `s3`). Merchant logos and user avatars reference `uploads.id`. The S3 driver resolves read URLs as signed URLs that expire; the local driver returns a plain public URL, `{APP_URL}/uploads/local/<key>`.
