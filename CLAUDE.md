@@ -40,7 +40,7 @@ pnpm --filter @gh-skeleton/landing <script>   # Landing (apps/landing)
 pnpm --filter @gh-skeleton/shared-types build
 ```
 
-`pnpm lint` covers every workspace: `apps/api` uses `apps/api/eslint.config.mjs` (with `--fix`), and `apps/admin`, `apps/landing`, and `packages/ui` use the root `eslint.config.mjs`, which builds on `packages/eslint-config/vue.mjs` and holds the import boundaries between the packages. `pnpm test` and `pnpm format` only reach `apps/api`.
+`pnpm lint` covers every workspace: `apps/api` uses `apps/api/eslint.config.mjs` (with `--fix`), and `apps/admin`, `apps/landing`, and `packages/ui` use the root `eslint.config.mjs`, which builds on `packages/eslint-config/vue.mjs` and holds the import boundaries between the packages. `pnpm test` reaches `apps/api` (Jest) and `apps/admin` (Vitest); `apps/landing` and `packages/ui` have no tests. `pnpm format` only reaches `apps/api`.
 
 Scaffold a frontend module from `apps/admin` (the Hygen templates live in `apps/admin/_templates`):
 
@@ -55,8 +55,8 @@ pnpm --filter gh-skeleton-app new-module
 - `settings.json` — hooks that feed their errors back to Claude, plus a `deny` list for force pushes and Prisma resets:
   - `PreToolUse`: `hooks/protect-files.mjs` refuses edits to `.env` files and to committed migrations; `hooks/guard-git.mjs` refuses force pushes (`--force-with-lease` is allowed).
   - `PostToolUse`: `hooks/lint-file.mjs` lints each edited file.
-  - `Stop`: `hooks/typecheck-changed.mjs` typechecks the workspaces with uncommitted changes; `hooks/test-changed.mjs` runs the Jest tests related to changed `apps/api` files; `hooks/check-permissions.mjs` fails on a permission code that the API or the admin app uses but the seed lacks.
-- `skills/` — `new-api-module`, `new-admin-module`, `new-landing-page`, `new-ui-component`, `add-permission`, `add-shared-type`, `db-migration`, `write-api-tests`. Use them for those tasks.
+  - `Stop`: `hooks/typecheck-changed.mjs` typechecks the workspaces with uncommitted changes; `hooks/test-changed.mjs` runs the tests related to changed `apps/api` (Jest) and `apps/admin` (Vitest) files; `hooks/check-permissions.mjs` fails on a permission code that the API or the admin app uses but the seed lacks.
+- `skills/` — `new-api-module`, `new-admin-module`, `new-landing-page`, `new-ui-component`, `add-permission`, `add-shared-type`, `db-migration`, `write-api-tests`, `update-docs`, `rename-project`. Use them for those tasks.
 - `agents/convention-reviewer.md` — reviews a diff against the rules in the CLAUDE.md files. Run it with `/convention-review [branch | range | files]`, which starts the agent in its own context.
 
 ## Workflow
@@ -65,9 +65,10 @@ Every change goes through plan, implement, verify.
 
 - **Plan.** For a new feature, a schema change, or a change that spans workspaces, write the plan and wait for approval before editing. A clear single-file change needs no plan.
 - **Implement.** Use the matching skill. Copy the reference implementation named in the app's CLAUDE.md rather than inventing a new shape. Leave files outside the task alone.
-- **Bug fix.** In `apps/api`, reproduce the bug with a failing test first, then fix it. The test stays as the regression test.
-- **Verify.** Run lint, typecheck, and (for `apps/api`) test in each workspace you touched, always as `pnpm --filter <workspace> <script>`. Do not run `pnpm lint` at the root: the `apps/api` lint script uses `--fix` and rewrites files the task did not touch.
+- **Bug fix.** Reproduce the bug with a failing test first, then fix it: always in `apps/api`, and in `apps/admin` when the bug is in a helper, store, or service. The test stays as the regression test.
+- **Verify.** Run lint, typecheck, and (for `apps/api` and `apps/admin`) test in each workspace you touched, always as `pnpm --filter <workspace> <script>`. Do not run `pnpm lint` at the root: the `apps/api` lint script uses `--fix` and rewrites files the task did not touch.
 - **Stop after three tries.** If verification fails three times on the same problem, stop and report what you tried and the last error. Never skip a test, loosen an assertion, or disable a lint rule to get a pass.
+- **Document.** When a change adds an endpoint, table, environment variable, component, or command, update the docs in the same change (`update-docs` skill).
 - **Review.** Before committing a change that touches tenant data, permissions, or `packages/`, run `/convention-review`.
 
 ## Architecture Overview

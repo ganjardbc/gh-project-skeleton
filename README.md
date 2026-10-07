@@ -105,7 +105,7 @@ pnpm dev          # Start every app in watch mode
 pnpm build        # Build every workspace, in dependency order
 pnpm typecheck    # Type-check every workspace
 pnpm lint         # Lint every workspace
-pnpm test         # Test (only the API defines a test script)
+pnpm test         # Test the API (Jest) and the admin app (Vitest)
 pnpm format       # Format (only the API defines a format script)
 
 pnpm db:migrate   # prisma migrate dev
@@ -130,6 +130,35 @@ Scaffold a new admin module (the Hygen templates live in `apps/admin/_templates`
 ```bash
 pnpm --filter gh-skeleton-app new-module
 ```
+
+## Working with Claude Code
+
+The repository is set up for [Claude Code](https://claude.com/claude-code). Open it with `claude` in the repository root after `pnpm install`; nothing else needs configuring.
+
+| Piece | Where | What it does |
+|---|---|---|
+| Rules | `CLAUDE.md` in the root, each app, and `packages/ui` | Conventions, reference implementations, and the plan → implement → verify workflow |
+| Skills | `.claude/skills/` | Step-by-step procedures: new API module, new admin module, new landing page, new UI component, permission, shared type, migration, API tests, docs, project rename |
+| Agent | `.claude/agents/convention-reviewer.md` | Reviews a change against the rules in a separate context. Run `/convention-review` |
+| Hooks | `.claude/hooks/`, wired in `.claude/settings.json` | Lint each edited file; type-check and test changed workspaces before Claude finishes; check permission codes against the seed; refuse edits to `.env` files and committed migrations; refuse force pushes |
+
+Ask for work in plain language, for example:
+
+- "Add a products module with CRUD and permissions."
+- "Users of one merchant can see another merchant's notifications. Fix it."
+- "Write tests for the merchants service."
+- "Add a phone column to users."
+- "Update the docs for the change I just made."
+
+A skill can also be called by name: `/new-api-module`, `/db-migration`, `/convention-review`.
+
+Starting a new project from this skeleton? Rename it first: `/rename-project acme-pos` (or `node scripts/rename-project.mjs acme-pos --title "Acme POS"`).
+
+Things to know:
+
+- The hooks run only while Claude Code is working. Commits made by hand are checked by CI, not by the hooks.
+- The hooks need `node`, `pnpm`, `git`, and installed dependencies.
+- Claude follows the rules in `CLAUDE.md`, so keep those files true. A rule that no longer matches the code produces wrong code. Review what Claude writes before merging it.
 
 ## What is included
 
@@ -159,7 +188,7 @@ Every successful response is wrapped as `{ success, data }`. Paginated lists ret
 
 - Each app has its own `Dockerfile`.
 - `docker-compose.yml` runs MySQL and the API on a shared Docker network without publishing host ports; it expects a reverse proxy in front. Replace the credentials, `JWT_SECRET`, and `CORS_ORIGIN` in it before use.
-- `.github/workflows/ci.yml` lints, tests, and builds the API when `apps/api`, `packages/shared-types`, or root config changes. A second job lints and type-checks `apps/admin`, `apps/landing`, and `packages/ui` when they change.
+- `.github/workflows/ci.yml` lints, tests, and builds the API when `apps/api`, `packages/shared-types`, or root config changes. A second job lints and type-checks `apps/admin`, `apps/landing`, and `packages/ui` when they change, and runs the `apps/admin` tests.
 
 ## Documentation
 
@@ -171,3 +200,7 @@ Every successful response is wrapped as `{ success, data }`. Paginated lists ret
 - [`docs/frontend`](docs/frontend) — spec summary and user flows
 - [`docs/runbooks`](docs/runbooks) — environment and command guides
 - `CLAUDE.md` in the root, each app, and `packages/ui` — conventions for working in that part of the codebase
+
+## License
+
+[MIT](LICENSE)
