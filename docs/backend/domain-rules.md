@@ -7,7 +7,7 @@ Rules the API enforces today. A new module must follow the tenancy and RBAC rule
 - The tenant is the **merchant**. Every user belongs to exactly one merchant (`users.merchant_id`).
 - All tenant-owned data is scoped by `merchant_id`, taken from the authenticated user.
 - `merchants.slug` is globally unique.
-- `users.email` and `users.username` are unique **per merchant**, not globally.
+- `users.username` is unique **per merchant**. `users.email` is unique **across all merchants**.
 - `roles` and `permissions` are global tables with no `merchant_id`.
 - Deleting a merchant cascades to its users.
 

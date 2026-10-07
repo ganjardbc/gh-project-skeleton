@@ -97,7 +97,7 @@ describe('AuthService', () => {
     });
 
     it('rejects an inactive user before checking the password', async () => {
-      prisma.users.findFirst.mockResolvedValue(userRow({ is_active: false }));
+      prisma.users.findUnique.mockResolvedValue(userRow({ is_active: false }));
 
       await expect(
         service.login({ email: 'one@example.com', password: 'x' }),
@@ -106,7 +106,7 @@ describe('AuthService', () => {
     });
 
     it('rejects a wrong password with the same message as an unknown email', async () => {
-      prisma.users.findFirst.mockResolvedValue(userRow());
+      prisma.users.findUnique.mockResolvedValue(userRow());
       compare.mockResolvedValue(false);
 
       await expect(
@@ -116,7 +116,7 @@ describe('AuthService', () => {
     });
 
     it('returns a token, the user without password_hash, and the roles', async () => {
-      prisma.users.findFirst.mockResolvedValue(userRow());
+      prisma.users.findUnique.mockResolvedValue(userRow());
       prisma.user_roles.findMany.mockResolvedValue([userRoleRow()]);
 
       const result = await service.login({
@@ -149,7 +149,7 @@ describe('AuthService', () => {
     });
 
     it('falls back to the stored avatar URL when signing fails', async () => {
-      prisma.users.findFirst.mockResolvedValue(
+      prisma.users.findUnique.mockResolvedValue(
         userRow({ avatar: 'https://cdn/old.png', avatar_upload_id: 'up-1' }),
       );
       uploads.generateSignedUrl.mockRejectedValue(new Error('gone'));
@@ -174,7 +174,7 @@ describe('AuthService', () => {
     });
 
     it('rejects an email that is already registered', async () => {
-      prisma.users.findFirst.mockResolvedValue(userRow());
+      prisma.users.findUnique.mockResolvedValue(userRow());
 
       await expect(service.register(registerDto() as any)).rejects.toThrow(
         'Email already registered',

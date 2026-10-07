@@ -182,7 +182,7 @@ Every successful response is wrapped as `{ success, data }`. Paginated lists ret
 
 ## Core concepts
 
-- **Multi-tenancy.** The tenant is the merchant, and every user belongs to exactly one. Every tenant-owned query in the API is scoped by the authenticated user's `merchant_id`, never by client input. `email` and `username` are unique per merchant.
+- **Multi-tenancy.** The tenant is the merchant, and every user belongs to exactly one. Every tenant-owned query in the API is scoped by the authenticated user's `merchant_id`, never by client input. `username` is unique per merchant; `email` is unique across all merchants, because login uses the email alone. Uploads belong to the merchant of the user who uploaded them.
 - **RBAC.** Permissions are codes in `<resource>.<action>` form, such as `user.create`. Roles and permissions are global. The API checks them on every request with `@RequirePermission('code')`; the admin app checks them only to hide or disable UI. A new code must be added to `apps/api/prisma/seed.ts` or through the RBAC API before a role can use it.
 - **Design system.** `@gh-skeleton/ui` holds the tokens and `Ui*` components used by both frontends. It has no build step. Dark mode is a `.dark` class on `<html>`.
 

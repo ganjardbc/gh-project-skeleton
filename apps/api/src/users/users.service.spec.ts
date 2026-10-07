@@ -1,4 +1,8 @@
-import { NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
 
@@ -27,6 +31,7 @@ describe('UsersService tenant scoping', () => {
       'findMany' | 'findFirst' | 'count' | 'create' | 'update',
       jest.Mock
     >;
+    uploads: Record<'findFirst', jest.Mock>;
     $transaction: jest.Mock;
   };
 
@@ -39,11 +44,14 @@ describe('UsersService tenant scoping', () => {
         create: jest.fn(),
         update: jest.fn(),
       },
+      uploads: { findFirst: jest.fn().mockResolvedValue(null) },
       $transaction: jest.fn((queries: Promise<unknown>[]) =>
         Promise.all(queries),
       ),
     };
-    const uploads = { generateSignedUrl: jest.fn() };
+    const uploads = {
+      generateSignedUrl: jest.fn().mockResolvedValue({ url: 'signed-url' }),
+    };
     service = new UsersService(prisma as any, uploads as any);
   });
 
@@ -151,7 +159,7 @@ describe('UsersService tenant scoping', () => {
       );
 
       expect(prisma.users.findFirst).toHaveBeenCalledWith({
-        where: { merchant_id: MERCHANT_A, email: 'two@example.com' },
+        where: { email: 'two@example.com' },
       });
       expect(prisma.users.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -161,6 +169,92 @@ describe('UsersService tenant scoping', () => {
         }),
       });
       expect(created).not.toHaveProperty('password_hash');
+    });
+  });
+
+  /**
+   * Login identifies an account by email alone, so an email is unique across
+   * all merchants. A username is still unique per merchant.
+   */
+  describe('email uniqueness', () => {
+    const dto = {
+      name: 'Two',
+      username: 'two',
+      email: 'taken@example.com',
+      password: 'secret123',
+    } as any;
+
+    it('rejects an email held by a user of another merchant on create', async () => {
+      prisma.users.findFirst.mockImplementation(
+        ({ where }: { where: { email?: string } }) =>
+          Promise.resolve(
+            where.email
+              ? userRow({ id: 'user-9', merchant_id: MERCHANT_B })
+              : null,
+          ),
+      );
+
+      await expect(service.create(dto, MERCHANT_A, 'actor')).rejects.toThrow(
+        ConflictException,
+      );
+      expect(prisma.users.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects an email held by a user of another merchant on update', async () => {
+      prisma.users.findFirst.mockImplementation(
+        ({ where }: { where: { id?: string; email?: string } }) =>
+          Promise.resolve(
+            where.email
+              ? userRow({ id: 'user-9', merchant_id: MERCHANT_B })
+              : userRow(),
+          ),
+      );
+
+      await expect(
+        service.update(
+          'user-1',
+          { email: 'taken@example.com' },
+          MERCHANT_A,
+          'actor',
+        ),
+      ).rejects.toThrow(ConflictException);
+      expect(prisma.users.update).not.toHaveBeenCalled();
+    });
+
+    it('still checks a username inside the merchant only', async () => {
+      prisma.users.create.mockImplementation(({ data }) =>
+        Promise.resolve({ id: 'user-2', ...data }),
+      );
+
+      await service.create(dto, MERCHANT_A, 'actor');
+
+      expect(prisma.users.findFirst).toHaveBeenCalledWith({
+        where: { merchant_id: MERCHANT_A, username: 'two' },
+      });
+    });
+  });
+
+  describe('avatar', () => {
+    beforeEach(() => {
+      prisma.users.findFirst.mockResolvedValue(userRow());
+      prisma.users.update.mockResolvedValue(userRow());
+    });
+
+    it('looks the upload up inside the caller’s merchant', async () => {
+      prisma.uploads.findFirst.mockResolvedValue({ id: 'up-1' });
+
+      await service.setAvatar('user-1', 'up-1', MERCHANT_A, 'actor');
+
+      expect(prisma.uploads.findFirst).toHaveBeenCalledWith({
+        where: { id: 'up-1', merchant_id: MERCHANT_A },
+      });
+    });
+
+    it('rejects an upload that does not exist or belongs to another merchant', async () => {
+      await expect(
+        service.setAvatar('user-1', 'up-1', MERCHANT_A, 'actor'),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.users.update).not.toHaveBeenCalled();
     });
   });
 });

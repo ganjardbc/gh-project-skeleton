@@ -139,10 +139,7 @@ export class SettingsService {
     }
 
     const existingUser = await this.prisma.users.findFirst({
-      where: {
-        email: dto.email,
-        merchant_id: user.merchant_id,
-      },
+      where: { email: dto.email },
     });
 
     if (existingUser && existingUser.id !== userId) {
@@ -186,10 +183,7 @@ export class SettingsService {
     }
 
     const existingUser = await this.prisma.users.findFirst({
-      where: {
-        email: dto.newEmail,
-        merchant_id: user.merchant_id,
-      },
+      where: { email: dto.newEmail },
     });
 
     if (existingUser && existingUser.id !== userId) {

@@ -187,8 +187,8 @@ export class MerchantsService {
   ) {
     await this.findOne(id, merchantId);
 
-    const upload = await this.prisma.uploads.findUnique({
-      where: { id: uploadId },
+    const upload = await this.prisma.uploads.findFirst({
+      where: { id: uploadId, merchant_id: merchantId },
     });
 
     if (!upload) {

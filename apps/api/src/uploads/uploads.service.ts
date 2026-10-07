@@ -26,6 +26,7 @@ export class UploadsService {
   async upload(
     file: Express.Multer.File,
     userId: string,
+    merchantId: string,
   ): Promise<{
     id: string;
     original_name: string;
@@ -45,6 +46,7 @@ export class UploadsService {
         size: file.size,
         s3_key: key,
         bucket: this.s3Config.bucket,
+        merchant_id: merchantId,
         uploaded_by_id: userId,
       },
     });
@@ -59,8 +61,11 @@ export class UploadsService {
     };
   }
 
-  async findById(id: string) {
-    const upload = await this.prisma.uploads.findUnique({ where: { id } });
+  /** One upload of the given merchant. An upload of another merchant is reported as not found. */
+  async findById(id: string, merchantId: string) {
+    const upload = await this.prisma.uploads.findFirst({
+      where: { id, merchant_id: merchantId },
+    });
 
     if (!upload) {
       throw new NotFoundException(`Upload with ID ${id} not found`);
@@ -69,14 +74,29 @@ export class UploadsService {
     return upload;
   }
 
-  async generateSignedUrl(id: string): Promise<{ url: string }> {
-    const upload = await this.findById(id);
-    const url = await this.storage.getUrl(upload.s3_key);
-    return { url };
+  /** Read URL for an upload of the given merchant. Use this for anything a client asks for by id. */
+  async getSignedUrl(id: string, merchantId: string): Promise<{ url: string }> {
+    const upload = await this.findById(id, merchantId);
+    return { url: await this.storage.getUrl(upload.s3_key) };
   }
 
-  async delete(id: string): Promise<void> {
-    const upload = await this.findById(id);
+  /**
+   * Read URL by id alone, with no tenant check. Only for an id read from a row the caller
+   * is already allowed to see (`users.avatar_upload_id`, `merchants.logo_upload_id`).
+   * Never pass an id that came from the client: use `getSignedUrl` for that.
+   */
+  async generateSignedUrl(id: string): Promise<{ url: string }> {
+    const upload = await this.prisma.uploads.findUnique({ where: { id } });
+
+    if (!upload) {
+      throw new NotFoundException(`Upload with ID ${id} not found`);
+    }
+
+    return { url: await this.storage.getUrl(upload.s3_key) };
+  }
+
+  async delete(id: string, merchantId: string): Promise<void> {
+    const upload = await this.findById(id, merchantId);
 
     await this.storage.delete(upload.s3_key);
 

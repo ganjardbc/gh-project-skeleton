@@ -96,7 +96,7 @@ gh-project-skeleton/
 The tenant boundary is the **merchant**. Every user belongs to exactly one merchant (`users.merchant_id`).
 
 - Every tenant-owned query in the API must scope by `merchant_id`, taken from the authenticated user (`@CurrentUser('merchant_id')`) — never from client input.
-- `email` and `username` are unique **per merchant**, not globally.
+- `username` is unique **per merchant**. `email` is unique **across all merchants**, because login identifies an account by email alone.
 
 ### Data Model
 
@@ -105,7 +105,7 @@ merchants
   └── users                (merchant_id)
         ├── user_roles ──── roles ── role_permissions ── permissions
         └── notifications
-uploads                    (referenced by merchants.logo_upload_id, users.avatar_upload_id)
+  └── uploads              (merchant_id; referenced by merchants.logo_upload_id, users.avatar_upload_id)
 ```
 
 Conventions: UUID `CHAR(36)` primary keys, snake_case tables and columns, Prisma models named after the tables (DB-first).

@@ -27,8 +27,8 @@ export class AuthService {
    * Validates credentials and returns JWT token with RBAC data
    */
   async login(dto: LoginDto) {
-    // Find user by email
-    const user = await this.prisma.users.findFirst({
+    // An email is unique across all merchants, so it identifies one account.
+    const user = await this.prisma.users.findUnique({
       where: { email: dto.email },
       include: {
         merchants: {
@@ -113,7 +113,7 @@ export class AuthService {
     }
 
     // Check if email already exists (across all merchants)
-    const existingUser = await this.prisma.users.findFirst({
+    const existingUser = await this.prisma.users.findUnique({
       where: { email: dto.email },
     });
 

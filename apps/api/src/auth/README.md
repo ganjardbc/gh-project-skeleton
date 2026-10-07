@@ -234,7 +234,7 @@ export class ProductsController {
 - Attaches user object to `request.user`
 
 ### Multi-Tenant Security
-- Email is unique per merchant (compound unique key)
+- Email is unique across all merchants
 - Username is unique per merchant
 - Users are scoped to their merchant
 
@@ -300,7 +300,7 @@ CREATE TABLE users (
   created_by CHAR(36),
   updated_by CHAR(36),
   
-  UNIQUE KEY unique_merchant_email (merchant_id, email),
+  UNIQUE KEY unique_user_email (email),
   UNIQUE KEY unique_merchant_username (merchant_id, username),
   FOREIGN KEY (merchant_id) REFERENCES merchants(id)
 );

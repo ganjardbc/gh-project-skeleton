@@ -80,7 +80,7 @@ Read it with `@CurrentUser()` or a single field with `@CurrentUser('merchant_id'
 
 - `merchant_id` comes from `@CurrentUser('merchant_id')` — never from the request body, query, or params.
 - All tenant-owned queries must filter by `merchant_id`.
-- `users.email` and `users.username` are unique per merchant (`@@unique([merchant_id, email])`), not globally.
+- `users.username` is unique per merchant (`@@unique([merchant_id, username])`). `users.email` is unique across all merchants (`@unique`): login looks an account up by email alone, so check it with `where: { email }`, without `merchant_id`.
 - `roles` and `permissions` are global tables with no `merchant_id`.
 
 ## Domain Rules
@@ -89,7 +89,7 @@ Read it with `@CurrentUser()` or a single field with `@CurrentUser('merchant_id'
 - **Role assignment**: Roles are global, but assigning, revoking, and listing a user's roles is scoped to the caller's merchant (`RbacService.assertUserInMerchant`). A caller may assign or revoke a role only when they hold every permission in it (`assertActorHoldsRole`); otherwise `role.assign` alone would let anyone take the `admin` role. Keep both checks on any new endpoint that changes `user_roles`.
 - **Registration**: Creates the merchant and the user in one transaction and assigns the `owner` role, which must already exist (run the seed).
 - **Users**: Deleting a user is a soft delete (`is_active = false`). Inactive users cannot log in or pass the JWT guard.
-- **Uploads**: Stored through a driver chosen by `STORAGE_DRIVER` (`local` or `s3`). Merchant logos and user avatars reference `uploads.id`. The S3 driver resolves read URLs as signed URLs that expire; the local driver returns a plain public URL, `{APP_URL}/uploads/local/<key>`.
+- **Uploads**: Tenant-owned (`uploads.merchant_id`). Anything a client asks for by upload id goes through the scoped methods `findById`, `getSignedUrl`, and `delete`, which take `merchantId`. `generateSignedUrl(id)` has no tenant check: call it only with an id read from a row the caller may already see (`users.avatar_upload_id`, `merchants.logo_upload_id`). Before storing an upload id on another row, look it up with `{ id, merchant_id }`. Stored through a driver chosen by `STORAGE_DRIVER` (`local` or `s3`). Merchant logos and user avatars reference `uploads.id`. The S3 driver resolves read URLs as signed URLs that expire; the local driver returns a plain public URL, `{APP_URL}/uploads/local/<key>`.
 - **Audit columns**: Set `created_by` / `updated_by` from the current user where the table has them.
 
 ## Database Conventions

@@ -20,13 +20,14 @@ MySQL 8, accessed through Prisma 7 with the MariaDB driver adapter. Connection s
 | `permissions` | RBAC permission codes | Global; `code` unique |
 | `role_permissions` | Role ↔ permission | Composite key `(role_id, permission_id)` |
 | `user_roles` | User ↔ role | Composite key `(user_id, role_id)` |
-| `uploads` | File metadata | Storage key, bucket, MIME type, size, uploader |
+| `uploads` | File metadata | Belongs to one merchant; storage key, bucket, MIME type, size, uploader |
 | `notifications` | Per-user notifications | `type`, `is_read` |
 
 ## Uniqueness
 
 - `merchants.slug`
-- `users (merchant_id, email)` and `users (merchant_id, username)`: unique per merchant, not globally
+- `users.email`: unique across all merchants, because login identifies an account by email alone
+- `users (merchant_id, username)`: unique per merchant, not globally
 - `roles.name`, `permissions.code`
 
 ## Indexes
@@ -36,7 +37,7 @@ Index foreign keys and columns that are filtered often. Existing indexes:
 - `users.merchant_id`, `users.avatar_upload_id`
 - `merchants.logo_upload_id`
 - `user_roles.user_id`, `user_roles.role_id`, `role_permissions.permission_id`
-- `uploads.uploaded_by_id`
+- `uploads.merchant_id`, `uploads.uploaded_by_id`
 - `notifications.user_id`, `notifications.is_read`, `notifications.created_at`
 
 A new tenant-owned table needs an index on `merchant_id`.
@@ -45,7 +46,7 @@ A new tenant-owned table needs an index on `merchant_id`.
 
 | Parent deleted | Effect |
 |---|---|
-| Merchant | Its users are deleted |
+| Merchant | Its users and upload rows are deleted. The stored files are not: delete them through the API first |
 | User | Its `user_roles` and `notifications` are deleted |
 | Role or permission | Its link rows are deleted |
 | Upload | `logo_upload_id` / `avatar_upload_id` referencing it are set to `NULL` |
@@ -67,7 +68,7 @@ pnpm db:studio     # browse data
 
 ### Migration baseline
 
-The history starts at one migration, `20261007000000_init`, which creates the eight tables above. It replaced four earlier migrations that created and then dropped tables from a previous project.
+The history starts at `20261007000000_init`, which creates the eight tables above. It replaced four earlier migrations that created and then dropped tables from a previous project.
 
 A new database needs nothing special: `pnpm db:migrate` applies the baseline.
 

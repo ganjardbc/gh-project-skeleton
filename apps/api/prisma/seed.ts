@@ -235,10 +235,7 @@ async function seedDemoData() {
 
   const adminUser = await prisma.users.upsert({
     where: {
-      merchant_id_email: {
-        merchant_id: adminMerchant.id,
-        email: 'admin@demo.com',
-      },
+      email: 'admin@demo.com',
     },
     update: {},
     create: {
@@ -255,10 +252,7 @@ async function seedDemoData() {
 
   const ownerUser = await prisma.users.upsert({
     where: {
-      merchant_id_email: {
-        merchant_id: demoMerchant.id,
-        email: 'owner@demo.com',
-      },
+      email: 'owner@demo.com',
     },
     update: {},
     create: {
@@ -275,10 +269,7 @@ async function seedDemoData() {
 
   const viewerUser = await prisma.users.upsert({
     where: {
-      merchant_id_email: {
-        merchant_id: demoMerchant.id,
-        email: 'viewer@demo.com',
-      },
+      email: 'viewer@demo.com',
     },
     update: {},
     create: {

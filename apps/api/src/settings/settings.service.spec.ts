@@ -162,17 +162,17 @@ describe('SettingsService', () => {
       jest.spyOn(Math, 'random').mockReturnValue(0);
     });
 
-    it('looks for the new email inside the caller’s merchant only', async () => {
+    it('looks for the new email across all merchants', async () => {
       await service.requestEmailVerification(USER, {
         email: 'new@example.com',
       });
 
       expect(prisma.users.findFirst).toHaveBeenCalledWith({
-        where: { email: 'new@example.com', merchant_id: MERCHANT_A },
+        where: { email: 'new@example.com' },
       });
     });
 
-    it('rejects an email another user of the merchant holds', async () => {
+    it('rejects an email any other user holds', async () => {
       prisma.users.findFirst.mockResolvedValue(userRow({ id: 'user-2' }));
 
       await expect(

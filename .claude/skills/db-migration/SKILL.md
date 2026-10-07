@@ -36,6 +36,8 @@ For a new table with its own module, use the `new-api-module` skill instead. Thi
 
    To edit the SQL before it is applied: `pnpm --filter gh-skeleton-api exec prisma migrate dev --create-only`, edit the new file under `prisma/migrations/`, then `pnpm db:migrate`.
 
+   `prisma migrate dev` is interactive and refuses to run in a shell without a terminal, which includes Claude Code ("the environment is non-interactive"). When that happens, write the migration by hand: get the SQL with `pnpm --filter gh-skeleton-api exec prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script`, save it as `prisma/migrations/<YYYYMMDDHHMMSS>_<name>/migration.sql`, read it critically (the generated script can drop a foreign key it does not need to), then apply it with `prisma migrate deploy` and confirm with the same `migrate diff` plus `--exit-code` that nothing differs.
+
    Never edit or delete a migration that has been applied. Add a new one. If `migrate dev` offers to reset the database, stop and ask the user: a reset deletes all local data.
 
 4. **Follow the change through the code.**

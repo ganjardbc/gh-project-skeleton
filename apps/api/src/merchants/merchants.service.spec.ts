@@ -29,7 +29,7 @@ describe('MerchantsService', () => {
       'findMany' | 'findUnique' | 'count' | 'create' | 'update' | 'delete',
       jest.Mock
     >;
-    uploads: Record<'findUnique', jest.Mock>;
+    uploads: Record<'findFirst', jest.Mock>;
     $transaction: jest.Mock;
   };
   let uploads: { generateSignedUrl: jest.Mock };
@@ -47,7 +47,7 @@ describe('MerchantsService', () => {
         update: jest.fn(),
         delete: jest.fn(),
       },
-      uploads: { findUnique: jest.fn().mockResolvedValue(null) },
+      uploads: { findFirst: jest.fn().mockResolvedValue(null) },
       $transaction: jest.fn((queries: Promise<unknown>[]) =>
         Promise.all(queries),
       ),
@@ -187,7 +187,17 @@ describe('MerchantsService', () => {
       expect(prisma.merchants.update).not.toHaveBeenCalled();
     });
 
-    it('rejects an upload that does not exist', async () => {
+    it('looks the upload up inside the caller’s merchant', async () => {
+      prisma.uploads.findFirst.mockResolvedValue({ id: 'up-1' });
+
+      await service.setImage(MERCHANT_A, 'up-1', MERCHANT_A, 'actor');
+
+      expect(prisma.uploads.findFirst).toHaveBeenCalledWith({
+        where: { id: 'up-1', merchant_id: MERCHANT_A },
+      });
+    });
+
+    it('rejects an upload that does not exist or belongs to another merchant', async () => {
       await expect(
         service.setImage(MERCHANT_A, 'missing', MERCHANT_A, 'actor'),
       ).rejects.toThrow(BadRequestException);
@@ -195,7 +205,7 @@ describe('MerchantsService', () => {
     });
 
     it('stores the upload id and its URL', async () => {
-      prisma.uploads.findUnique.mockResolvedValue({ id: 'up-1' });
+      prisma.uploads.findFirst.mockResolvedValue({ id: 'up-1' });
 
       await service.setImage(MERCHANT_A, 'up-1', MERCHANT_A, 'actor');
 

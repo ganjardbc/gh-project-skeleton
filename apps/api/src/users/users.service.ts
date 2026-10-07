@@ -76,16 +76,16 @@ export class UsersService {
 
   /**
    * Create a new user under the current merchant.
-   * - username and email must be unique per merchant.
+   * - username must be unique per merchant, email across all merchants.
    * - Password is hashed before storage.
    */
   async create(dto: CreateUserDto, merchantId: string, createdBy: string) {
-    // Check email uniqueness per merchant
+    // An email is unique across all merchants: login identifies the account by email alone.
     const existingEmail = await this.prisma.users.findFirst({
-      where: { merchant_id: merchantId, email: dto.email },
+      where: { email: dto.email },
     });
     if (existingEmail) {
-      throw new ConflictException('Email already exists for this merchant');
+      throw new ConflictException('Email already registered');
     }
 
     // Check username uniqueness per merchant
@@ -134,10 +134,10 @@ export class UsersService {
     // Validate email uniqueness if changing
     if (dto.email) {
       const conflict = await this.prisma.users.findFirst({
-        where: { merchant_id: merchantId, email: dto.email },
+        where: { email: dto.email },
       });
       if (conflict && conflict.id !== id) {
-        throw new ConflictException('Email already exists for this merchant');
+        throw new ConflictException('Email already registered');
       }
     }
 
@@ -207,8 +207,8 @@ export class UsersService {
   ) {
     await this.findOne(id, merchantId);
 
-    const upload = await this.prisma.uploads.findUnique({
-      where: { id: uploadId },
+    const upload = await this.prisma.uploads.findFirst({
+      where: { id: uploadId, merchant_id: merchantId },
     });
 
     if (!upload) {
