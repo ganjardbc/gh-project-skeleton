@@ -118,10 +118,7 @@ The `users` module is the model for tenant-owned resources. Read it before writi
 | `src/users/dto/create-user.dto.ts` | Validation decorators with `@ApiProperty` |
 | `src/users/users.service.spec.ts` | The hand-built Prisma mock and the cross-merchant cases |
 
-Do not copy:
-
-- The `any` parameter of `attachSignedUrl` in `users.service.ts`. Type new helpers.
-- `SettingsController`'s permission codes: they are missing from the seed (see Gotchas).
+Do not copy the `any` parameter of `attachSignedUrl` in `users.service.ts`. Type new helpers.
 
 ## Common Module
 
@@ -156,7 +153,7 @@ Do not copy:
 
 ## Gotchas
 
-- A permission code used in `@RequirePermission` must exist in the `permissions` table and be attached to a role. The `settings.*` codes used by `SettingsController` are not in `prisma/seed.ts`.
+- A permission code used in `@RequirePermission` must exist in the `permissions` table and be attached to a role. The `check-permissions` hook fails on a code that is used but not seeded.
 - `PORT` defaults to 3030 when unset.
 - The local storage driver builds URLs from `APP_URL`, which also falls back to `http://localhost:3030`. `.env.example` sets `PORT=3000` and has no `APP_URL`, so local upload URLs point at the wrong port until `APP_URL` is set.
 - `postinstall` runs `prisma generate`, so the client is rebuilt after every `pnpm install`. It is allowed to fail (the Docker build installs before the schema is copied and generates explicitly afterwards). If services report `Property 'users' does not exist on type 'PrismaService'`, run `pnpm db:generate`.

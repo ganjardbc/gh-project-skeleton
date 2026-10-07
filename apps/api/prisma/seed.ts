@@ -179,6 +179,19 @@ async function main() {
     { code: 'upload.create', description: 'Upload files to S3' },
     { code: 'upload.read', description: 'View file metadata & signed URLs' },
     { code: 'upload.delete', description: 'Delete uploaded files' },
+    // Own account settings
+    { code: 'settings.profile.read', description: 'Read own profile' },
+    { code: 'settings.profile.update', description: 'Update own profile' },
+    {
+      code: 'settings.password.update',
+      description: 'Change own password',
+    },
+    { code: 'settings.email.update', description: 'Change own email' },
+    {
+      code: 'settings.account.deactivate',
+      description: 'Deactivate own account',
+    },
+    { code: 'settings.site.update', description: 'Manage own preferences' },
   ];
 
   for (const perm of permissionsData) {
@@ -221,6 +234,12 @@ async function main() {
     'upload.create',
     'upload.read',
     'upload.delete',
+    'settings.profile.read',
+    'settings.profile.update',
+    'settings.password.update',
+    'settings.email.update',
+    'settings.account.deactivate',
+    'settings.site.update',
   ].map(pid);
 
   const viewerPermIds = [
@@ -230,6 +249,12 @@ async function main() {
     'user.read',
     'notification.read',
     'upload.read',
+    'settings.profile.read',
+    'settings.profile.update',
+    'settings.password.update',
+    'settings.email.update',
+    'settings.account.deactivate',
+    'settings.site.update',
   ].map(pid);
 
   const rolePermMap: { roleId: string; permIds: string[] }[] = [
