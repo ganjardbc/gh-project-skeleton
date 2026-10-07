@@ -12,8 +12,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `pnpm preview` | Preview production build |
 | `pnpm new-module` | Generate a new feature module via Hygen (`npx hygen module new`) |
 | `pnpm lint` | ESLint, using the root `eslint.config.mjs` |
+| `pnpm test` | Vitest, one run (`vitest run`) |
 
-From the repo root, prefix with `pnpm --filter gh-skeleton-app`. There is no test script.
+From the repo root, prefix with `pnpm --filter gh-skeleton-app`.
+
+## Tests
+
+Vitest with jsdom, configured in the `test` block of `vite.config.ts`. A test is a `*.spec.ts` file in a `__tests__` folder beside the code it covers; `src/helpers/__tests__/auth.spec.ts` is the reference.
+
+- Test helpers, stores, and services: code with logic and no template. Pages and components have no tests yet, and `@vue/test-utils` is not installed.
+- `__tests__` folders are excluded from `vue-tsc`, so a type error in a test shows up only when the test runs.
+- Clear `localStorage` in `beforeEach`; the auth helpers read and write it directly.
+- For a bug in a helper, store, or service, write the failing test first.
 
 ## Tech Stack
 

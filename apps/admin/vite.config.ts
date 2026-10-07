@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -27,5 +27,9 @@ export default defineConfig({
     },
     // @gh-skeleton/ui is compiled from source: keep it on this app's copies.
     dedupe: ['vue', 'primevue', '@primeuix/themes'],
+  },
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/__tests__/**/*.spec.ts'],
   },
 });
